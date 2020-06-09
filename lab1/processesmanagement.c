@@ -36,8 +36,7 @@ typedef enum {TAT,RT,CBT,THGT,WT} Metric;
 *                            Global data structures                           *
 \*****************************************************************************/
 
-
-
+ProcessControlBlock *PrevProcess;
 
 /*****************************************************************************\
 *                                  Global data                                *
@@ -164,17 +163,22 @@ void CPUScheduler(Identifier whichPolicy) {
     EnqueueProcess(RUNNINGQUEUE, selectedProcess); // Put process in Running Queue                         
   }
 }
-
 /***********************************************************************\                                               
  * Input : None                                                         *                                               
  * Output: Pointer to the process based on First Come First Serve (FCFS)*
  * Function: Returns process control block based on FCFS                *                                                \***********************************************************************/
 ProcessControlBlock *FCFS_Scheduler() {
   /* Select Process based on FCFS */
-  // Implement code for FCFS
-  // ProcessControlBlock *selectedProcess = (ProcessControlBlock *) NULL;
-  // ProcessControlBlock *selectedProcess = DequeueProcess(READYQUEUE);
-  ProcessControlBlock *selectedProcess = READYQUEUE.Tail;
+
+  if (PrevProcess) {
+    if (PrevProcess->state == RUNNING) {
+      return((ProcessControlBlock* NULL));
+    }
+  }
+  
+  ProcessControlBlock *selectedProcess = DequeueProcess(READYQUEUE);
+  PrevProcess = selectedProcess;
+
   return(selectedProcess);
 }
 
