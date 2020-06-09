@@ -173,7 +173,6 @@ ProcessControlBlock *FCFS_Scheduler() {
   /* Select Process based on FCFS */
   // Implement code for FCFS
   ProcessControlBlock *selectedProcess = (ProcessControlBlock *) NULL;
-  DisplayQueue("This is the Queue",READYQUEUE);
   return(selectedProcess);
 }
 
