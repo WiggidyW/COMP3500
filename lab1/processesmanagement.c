@@ -78,11 +78,6 @@ int main (int argc, char **argv) {
    if (Initialization(argc,argv)){
      ManageProcesses();
    }
-   DisplayProcess('0', Queues[0].Head);
-   DisplayProcess('1', Queues[1].Head);
-   DisplayProcess('2', Queues[2].Head);
-   DisplayProcess('3', Queues[3].Head);
-   DisplayProcess('4', Queues[4].Head);
 } /* end of main function */
 
 /***********************************************************************\
@@ -250,6 +245,11 @@ void NewJobIn(ProcessControlBlock whichProcess){
   EnqueueProcess(JOBQUEUE,NewProcess);
   DisplayQueue("Job Queue in NewJobIn",JOBQUEUE);
   LongtermScheduler(); /* Job Admission  */
+   DisplayProcess('0', Queues[0].Head);
+   DisplayProcess('1', Queues[1].Head);
+   DisplayProcess('2', Queues[2].Head);
+   DisplayProcess('3', Queues[3].Head);
+   DisplayProcess('4', Queues[4].Head);
 }
 
 
