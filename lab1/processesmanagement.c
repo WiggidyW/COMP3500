@@ -172,7 +172,8 @@ void CPUScheduler(Identifier whichPolicy) {
 ProcessControlBlock *FCFS_Scheduler() {
   /* Select Process based on FCFS */
   // Implement code for FCFS
-  ProcessControlBlock *selectedProcess = (ProcessControlBlock *) NULL;
+  // ProcessControlBlock *selectedProcess = (ProcessControlBlock *) NULL;
+  ProcessControlBlock *selectedProcess = QueueParms.Tail;
   return(selectedProcess);
 }
 
