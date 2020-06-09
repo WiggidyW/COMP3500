@@ -78,6 +78,11 @@ int main (int argc, char **argv) {
    if (Initialization(argc,argv)){
      ManageProcesses();
    }
+   DisplayQueue("this queue", Queues[0]);
+   DisplayQueue("this queue", Queues[1]);
+   DisplayQueue("this queue", Queues[2]);
+   DisplayQueue("this queue", Queues[3]);
+   DisplayQueue("this queue", Queues[4]);
 } /* end of main function */
 
 /***********************************************************************\
@@ -170,6 +175,7 @@ void CPUScheduler(Identifier whichPolicy) {
 ProcessControlBlock *FCFS_Scheduler() {
   /* Select Process based on FCFS */
 
+  // Add no new process if previous process is still running
   if (PrevProcess) {
     if (PrevProcess->state == RUNNING) {
       return((ProcessControlBlock*) NULL);
@@ -191,9 +197,15 @@ ProcessControlBlock *FCFS_Scheduler() {
 \***********************************************************************/
 ProcessControlBlock *SJF_Scheduler() {
   /* Select Process with Shortest Remaining Time*/
+
+  // Add no new process if previous process is still running
+  if (PrevProcess) {
+    if (PrevProcess->state == RUNNING) {
+      return((ProcessControlBlock*) NULL);
+    }
+  }
+
   ProcessControlBlock *selectedProcess = (ProcessControlBlock *) NULL;
-  
-  // Implement code for SJF
  
   return(selectedProcess);
 }
