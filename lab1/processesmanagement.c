@@ -172,7 +172,7 @@ ProcessControlBlock *FCFS_Scheduler() {
 
   if (PrevProcess) {
     if (PrevProcess->state == RUNNING) {
-      return((ProcessControlBlock* NULL));
+      return((ProcessControlBlock*) NULL);
     }
   }
   
