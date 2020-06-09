@@ -130,14 +130,14 @@ void IO() {
     ProcessToMove = DequeueProcess(WAITINGQUEUE);
     while (ProcessToMove){
       if (Now()>=ProcessToMove->TimeIOBurstDone){
-	ProcessToMove->RemainingCpuBurstTime = ProcessToMove->CpuBurstTime;
-	ProcessToMove->JobStartTime = Now();
-	EnqueueProcess(READYQUEUE,ProcessToMove);
+        ProcessToMove->RemainingCpuBurstTime = ProcessToMove->CpuBurstTime;
+        ProcessToMove->JobStartTime = Now();
+        EnqueueProcess(READYQUEUE,ProcessToMove);
       } else {
-	EnqueueProcess(WAITINGQUEUE,ProcessToMove);
+        EnqueueProcess(WAITINGQUEUE,ProcessToMove);
       }
       if (ProcessToMove->ProcessID == IDFirstProcess){
-	break;
+        break;
       }
       ProcessToMove =DequeueProcess(WAITINGQUEUE);
     } // while (ProcessToMove)
@@ -245,21 +245,11 @@ void NewJobIn(ProcessControlBlock whichProcess){
   EnqueueProcess(JOBQUEUE,NewProcess);
   DisplayQueue("Job Queue in NewJobIn",JOBQUEUE);
   LongtermScheduler(); /* Job Admission  */
-  if (Queues[0].Head) {
-    DisplayProcess('0', Queues[0].Head);
-  }
-  if (Queues[1].Head) {
-    DisplayProcess('1', Queues[1].Head);
-  }
-  if (Queues[2].Head) {
-    DisplayProcess('2', Queues[2].Head);
-  }
-  if (Queues[3].Head) {
-    DisplayProcess('3', Queues[3].Head);
-  }
-  if (Queues[4].Head) {
-    DisplayProcess('4', Queues[4].Head);
-  }
+  DisplayQueue("Job", JOBQUEUE);
+  DisplayQueue("Ready", READYQUEUE);
+  DisplayQueue("Running", RUNNINGQUEUE);
+  DisplayQueue("Waiting", WAITINGQUEUE);
+  DisplayQueue("Exit", EXITQUEUE);
 }
 
 
