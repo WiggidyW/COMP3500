@@ -169,18 +169,9 @@ void CPUScheduler(Identifier whichPolicy) {
  * Function: Returns process control block based on FCFS                *                                                \***********************************************************************/
 ProcessControlBlock *FCFS_Scheduler() {
   /* Select Process based on FCFS */
-
-  // Add no new process if previous process is still running
-  if (PrevProcess) {
-    if (PrevProcess->state == RUNNING) {
-      return((ProcessControlBlock*) NULL);
-    }
-  }
   
-  ProcessControlBlock *selectedProcess = DequeueProcess(READYQUEUE);
-  PrevProcess = selectedProcess;
-
-  return(selectedProcess);
+  // simply return the tail of the queue
+  return(DequeueProcess(READYQUEUE));
 }
 
 
@@ -193,15 +184,24 @@ ProcessControlBlock *FCFS_Scheduler() {
 ProcessControlBlock *SJF_Scheduler() {
   /* Select Process with Shortest Remaining Time*/
 
-  // Add no new process if previous process is still running
-  if (PrevProcess) {
-    if (PrevProcess->state == RUNNING) {
-      return((ProcessControlBlock*) NULL);
+  // Get a pointer to the shortest process in the queue
+  ProcessControlBlock *shortestProcess = Queues[READYQUEUE].Tail;
+  ProcessControlBlock *currentProcess = shortestProcess->previous;
+  while (currentProcess != NULL) {
+    if (currentProcess->RemainingCpuBurstTime < shortestProcess->RemainingCpuBurstTime) {
+      shortestProcess = currentProcess;
     }
+    currentProcess = currentProcess->previous;
   }
 
-  ProcessControlBlock *selectedProcess = (ProcessControlBlock *) NULL;
- 
+  // Dequeue and Requeue the queue until we have the shortest process
+  ProcessControlBlock *selectedProcess = DequeueProcess(READYQUEUE);
+  while (selectedProcess != shortestProcess) {
+    EnqueueProcess(READYQUEUE, selectedProcess);
+    selectedProcess = DequeueProcess(READYQUEUE);
+  }
+  
+  // return it
   return(selectedProcess);
 }
 
@@ -212,12 +212,10 @@ ProcessControlBlock *SJF_Scheduler() {
  * Function: Returns process control block based on RR                  *                                              \
  \***********************************************************************/
 ProcessControlBlock *RR_Scheduler() {
-  /* Select Process based on RR*/
-  ProcessControlBlock *selectedProcess = (ProcessControlBlock *) NULL;
+  /* Select Process based on RR*/                                             
 
-  // Implement code for RR                                                                                             
-
-  return(selectedProcess);
+  // simply return the tail of the queue
+  return(DequeueProcess(READYQUEUE));
 }
 
 /***********************************************************************\  
@@ -245,11 +243,6 @@ void NewJobIn(ProcessControlBlock whichProcess){
   EnqueueProcess(JOBQUEUE,NewProcess);
   DisplayQueue("Job Queue in NewJobIn",JOBQUEUE);
   LongtermScheduler(); /* Job Admission  */
-  DisplayQueue("Job", JOBQUEUE);
-  DisplayQueue("Ready", READYQUEUE);
-  DisplayQueue("Running", RUNNINGQUEUE);
-  DisplayQueue("Waiting", WAITINGQUEUE);
-  DisplayQueue("Exit", EXITQUEUE);
 }
 
 
