@@ -91,7 +91,7 @@ void ManageProcesses(void){
   while (1) {
     IO();
     CPUScheduler(PolicyNumber);
-    Dispatcher();
+    Dispatcher(PolicyNumber);
   }
 }
 
@@ -145,9 +145,9 @@ void IO() {
 }
 
 /***********************************************************************\    
- * Input : whichPolicy (1:FCFS, 2: SJF, and 3:RR)                      *        
- * Output: None                                                         * 
- * Function: Selects Process from Ready Queue and Puts it on Running Q. *
+* Input : whichPolicy (1:FCFS, 2: SJF, and 3:RR)                       *        
+* Output: None                                                         * 
+* Function: Selects Process from Ready Queue and Puts it on Running Q. *
 \***********************************************************************/
 void CPUScheduler(Identifier whichPolicy) {
   ProcessControlBlock *selectedProcess;
@@ -164,9 +164,10 @@ void CPUScheduler(Identifier whichPolicy) {
   }
 }
 /***********************************************************************\                                               
- * Input : None                                                         *                                               
- * Output: Pointer to the process based on First Come First Serve (FCFS)*
- * Function: Returns process control block based on FCFS                *                                                \***********************************************************************/
+* Input : None                                                         *                                               
+* Output: Pointer to the process based on First Come First Serve (FCFS)*
+* Function: Returns process control block based on FCFS                *
+\***********************************************************************/
 ProcessControlBlock *FCFS_Scheduler() {
   /* Select Process based on FCFS */
   
@@ -177,9 +178,9 @@ ProcessControlBlock *FCFS_Scheduler() {
 
 
 /***********************************************************************\                         
- * Input : None                                                         *                                     
- * Output: Pointer to the process with shortest remaining time (SJF)   *                                     
- * Function: Returns process control block with SJF                    *                                     
+* Input : None                                                          *                                     
+* Output: Pointer to the process with shortest remaining time (SJF)     *                                     
+* Function: Returns process control block with SJF                      *                                     
 \***********************************************************************/
 ProcessControlBlock *SJF_Scheduler() {
   /* Select Process with Shortest Remaining Time*/
@@ -207,10 +208,10 @@ ProcessControlBlock *SJF_Scheduler() {
 
 
 /***********************************************************************\                                               
- * Input : None                                                         *                                               
- * Output: Pointer to the process based on Round Robin (RR)             *                                               
- * Function: Returns process control block based on RR                  *                                              \
- \***********************************************************************/
+* Input : None                                                          *                                               
+* Output: Pointer to the process based on Round Robin (RR)              *                                               
+* Function: Returns process control block based on RR                   *
+\***********************************************************************/
 ProcessControlBlock *RR_Scheduler() {
   /* Select Process based on RR*/                                             
 
@@ -219,13 +220,13 @@ ProcessControlBlock *RR_Scheduler() {
 }
 
 /***********************************************************************\  
- * Input : None                                                         *   
- * Output: None                                                         *   
- * Function:                                                            *
- *  1)If process in Running Queue needs computation, put it on CPU      *
- *              else move process from running queue to Exit Queue      *     
+* Input : None                                                          *   
+* Output: None                                                          *   
+* Function:                                                             *
+*  1)If process in Running Queue needs computation, put it on CPU       *
+*              else move process from running queue to Exit Queue       *     
 \***********************************************************************/
-void Dispatcher() {
+void Dispatcher(Identifier whichPolicy) {
   double start;
   //
 }
@@ -246,12 +247,14 @@ void NewJobIn(ProcessControlBlock whichProcess){
 }
 
 
-/***********************************************************************\                                               * Input : None                                                         *                                                * Output: None                                                         *                
-* Function:                                                            *
-* 1) BookKeeping is called automatically when 250 arrived              *
-* 2) Computes and display metrics: average turnaround  time, throughput*
-*     average response time, average waiting time in ready queue,      *
-*     and CPU Utilization                                              *                                                     
+/***********************************************************************\
+* Input : None                                                          *
+* Output: None                                                          *                
+* Function:                                                             *
+* 1) BookKeeping is called automatically when 250 arrived               *
+* 2) Computes and display metrics: average turnaround  time, throughput *
+*     average response time, average waiting time in ready queue,       *
+*     and CPU Utilization                                               *                                                     
 \***********************************************************************/
 void BookKeeping(void){
   double end = Now(); // Total time for all processes to arrive
