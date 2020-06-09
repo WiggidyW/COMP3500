@@ -78,11 +78,11 @@ int main (int argc, char **argv) {
    if (Initialization(argc,argv)){
      ManageProcesses();
    }
-   DisplayQueue("this queue", Queues[0]);
-   DisplayQueue("this queue", Queues[1]);
-   DisplayQueue("this queue", Queues[2]);
-   DisplayQueue("this queue", Queues[3]);
-   DisplayQueue("this queue", Queues[4]);
+   DisplayProcess('0', Queues[0].Head);
+   DisplayProcess('1', Queues[1].Head);
+   DisplayProcess('2', Queues[2].Head);
+   DisplayProcess('3', Queues[3].Head);
+   DisplayProcess('4', Queues[4].Head);
 } /* end of main function */
 
 /***********************************************************************\
