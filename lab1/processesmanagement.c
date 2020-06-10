@@ -229,7 +229,7 @@ ProcessControlBlock *RR_Scheduler() {
 void Dispatcher(Identifier whichPolicy) {
   #define min(a,b) (((a) < (b)) ? (a) : (b))
 
-  ProcessControlBlock *process = DequeueProcess(RUNNINGQUEUE);
+  ProcessControlBlock *process = Queues[RUNNINGQUEUE].Tail;
 
   // Do nothing if queue is empty
   if (process == NULL) {
@@ -254,12 +254,15 @@ void Dispatcher(Identifier whichPolicy) {
     OnCPU(process, burstTime);
   }
 
-  // Put it back if it isn't done
-  if (process->RemainingCpuBurstTime > 0) {
-    EnqueueProcess(RUNNINGQUEUE, process);
-  }
+  // // Put it back if it isn't done
+  // if (process->RemainingCpuBurstTime > 0) {
+  //   EnqueueProcess(RUNNINGQUEUE, process);
+  // }
   // Put the process in the exit queue if it's finished
   else {
+    process = DequeueProcess(RUNNINGQUEUE);
+    process->state = DONE;
+    EnqueueProcess(EXITQUEUE, process);
     // Book-keeping
     NumberofJobs[TAT]++;
     NumberofJobs[RT]++;
@@ -270,8 +273,6 @@ void Dispatcher(Identifier whichPolicy) {
     SumMetrics[CBT] = SumMetrics[CBT] + (process->TimeInCpu);
     SumMetrics[WT] = SumMetrics[WT] + (process->TimeInReadyQueue);
     // End Book-keeping
-    process->state = DONE;
-    EnqueueProcess(EXITQUEUE, process);
   }
 }
 
