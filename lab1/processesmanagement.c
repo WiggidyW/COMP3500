@@ -259,9 +259,9 @@ void Dispatcher(Identifier whichPolicy) {
     process->RemainingCpuBurstTime = process->RemainingCpuBurstTime - burstTime;
     process->TimeInCpu = process->TimeInCpu + burstTime;
     // place it back in the running queue for IO to handle
-    EnqueueProcess(process, RUNNINGQUEUE);
+    EnqueueProcess(RUNNINGQUEUE, process);
   }
-  
+
   else {
     process = DequeueProcess(RUNNINGQUEUE);
     process->state = DONE;
