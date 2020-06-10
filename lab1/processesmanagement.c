@@ -261,10 +261,13 @@ void Dispatcher(Identifier whichPolicy) {
     // This seems to not mutate the process at all
     OnCPU(process, burstTime);
     // so we will mutate it manually!
+    if (process->StartCpuTime == 0) {
+      process->StartCpuTime = Now() - burstTime;
+    }
     process->RemainingCpuBurstTime = process->RemainingCpuBurstTime - burstTime;
     process->TimeInCpu = process->TimeInCpu + burstTime;
   }
-  
+
   // The process is finished!
   else {
     process = DequeueProcess(RUNNINGQUEUE);
