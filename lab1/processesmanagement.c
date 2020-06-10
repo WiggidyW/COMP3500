@@ -36,7 +36,7 @@ typedef enum {TAT,RT,CBT,THGT,WT} Metric;
 *                            Global data structures                           *
 \*****************************************************************************/
 
-ProcessControlBlock *PrevProcess;
+
 
 /*****************************************************************************\
 *                                  Global data                                *
@@ -262,60 +262,23 @@ void Dispatcher(Identifier whichPolicy) {
     }
     process->RemainingCpuBurstTime = process->RemainingCpuBurstTime - burstTime;
     process->TimeInCpu = process->TimeInCpu + burstTime;
-
-    printf("--From OnCpu--\n");
-    printf("PID - %i\n", process->ProcessID);
-    printf("JobArrivalTime - %f\n", process->JobArrivalTime);
-    printf("TotalJobDuration - %f\n", process->TotalJobDuration);
-    printf("TimeInCpu - %f\n", process->TimeInCpu);
-    printf("CpuBurstTime - %f\n", process->CpuBurstTime);
-    printf("RemainingCpuBurstTime - %f\n", process->RemainingCpuBurstTime);
-    printf("IOBurstTime - %f\n", process->IOBurstTime);
-    printf("TimeIOBurstDone - %f\n", process->TimeIOBurstDone);
-    printf("JobStartTime - %f\n", process->JobStartTime);
-    printf("StartCpuTime - %f\n", process->StartCpuTime);
-    printf("TimeEnterWaiting - %f\n", process->TimeEnterWaiting);
-    printf("JobExitTime - %f\n", process->JobExitTime);
-    printf("TimeInReadyQueue - %f\n", process->TimeInReadyQueue);
-    printf("TimeInWaitQueue - %f\n", process->TimeInWaitQueue);
-    printf("TimeInJobQueue - %f\n", process->TimeInJobQueue);
-    printf("---\n");
   }
 
   // The process is finished!
   else {
-
-    printf("--From Exit--\n");
-    printf("PID - %i\n", process->ProcessID);
-    printf("JobArrivalTime - %f\n", process->JobArrivalTime);
-    printf("TotalJobDuration - %f\n", process->TotalJobDuration);
-    printf("TimeInCpu - %f\n", process->TimeInCpu);
-    printf("CpuBurstTime - %f\n", process->CpuBurstTime);
-    printf("RemainingCpuBurstTime - %f\n", process->RemainingCpuBurstTime);
-    printf("IOBurstTime - %f\n", process->IOBurstTime);
-    printf("TimeIOBurstDone - %f\n", process->TimeIOBurstDone);
-    printf("JobStartTime - %f\n", process->JobStartTime);
-    printf("StartCpuTime - %f\n", process->StartCpuTime);
-    printf("TimeEnterWaiting - %f\n", process->TimeEnterWaiting);
-    printf("JobExitTime - %f\n", process->JobExitTime);
-    printf("TimeInReadyQueue - %f\n", process->TimeInReadyQueue);
-    printf("TimeInWaitQueue - %f\n", process->TimeInWaitQueue);
-    printf("TimeInJobQueue - %f\n", process->TimeInJobQueue);
-    printf("---\n");
-
     process = DequeueProcess(RUNNINGQUEUE);
     process->state = DONE;
     process->JobExitTime = Now();
     EnqueueProcess(EXITQUEUE, process);
     // Book-keeping
-    NumberofJobs[TAT]++;
-    NumberofJobs[RT]++;
-    NumberofJobs[WT]++;
-    NumberofJobs[THGT]++;
-    SumMetrics[TAT] = SumMetrics[TAT] + (process->JobExitTime - process->JobArrivalTime);
-    SumMetrics[RT] = SumMetrics[RT] + (process->StartCpuTime - process->JobArrivalTime);
-    SumMetrics[CBT] = SumMetrics[CBT] + (process->TimeInCpu);
-    SumMetrics[WT] = SumMetrics[WT] + (process->TimeInReadyQueue);
+    // NumberofJobs[TAT]++;
+    // NumberofJobs[RT]++;
+    // NumberofJobs[WT]++;
+    // NumberofJobs[THGT]++;
+    // SumMetrics[TAT] = SumMetrics[TAT] + (process->JobExitTime - process->JobArrivalTime);
+    // SumMetrics[RT] = SumMetrics[RT] + (process->StartCpuTime - process->JobArrivalTime);
+    // SumMetrics[CBT] = SumMetrics[CBT] + (process->TimeInCpu);
+    // SumMetrics[WT] = SumMetrics[WT] + (process->TimeInReadyQueue);
     // End Book-keeping
   }
 }
@@ -349,7 +312,7 @@ void BookKeeping(void){
   double end = Now(); // Total time for all processes to arrive
   Metric m;
 
-  printf("\n********* Processes Managemenent Numbers ******************************\n");
+  printf("\n********* Completed Process Only Numbers ******************************\n");
   printf("Policy Number = %d, Quantum = %.6f   Show = %d\n", PolicyNumber, Quantum, Show);
   printf("Number of Completed Processes = %d\n", NumberofJobs[THGT]);
   printf("ATAT=%f   ART=%f  CBT = %f  T=%f AWT=%f\n", 
