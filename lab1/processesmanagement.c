@@ -244,14 +244,14 @@ void Dispatcher(Identifier whichPolicy) {
       case SJF: burstTime = process->RemainingCpuBurstTime; break;
       case RR: burstTime = min(process->RemainingCpuBurstTime, Quantum);
     }
+    printf("start - %f\n", process->RemainingCpuBurstTime);
     OnCPU(process, burstTime);
-    printf("Ran process!");
   }
 
   // Put it back if it isn't done
   if (process->RemainingCpuBurstTime > 0) {
     EnqueueProcess(RUNNINGQUEUE, process);
-    printf("Putting it back in run queue!");
+    printf("end - %f\n", process->RemainingCpuBurstTime);
   }
   // Put the process in the exit queue if it's finished
   else {
