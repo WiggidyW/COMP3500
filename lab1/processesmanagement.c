@@ -236,34 +236,40 @@ void Dispatcher(Identifier whichPolicy) {
     return;
   }
 
-  printf("---\n");
-  printf("TotalJobDuration - %f\n", process->TotalJobDuration);
-  printf("CpuBurstTime - %f\n", process->CpuBurstTime);
-  printf("RemainingCpuBurstTime - %f\n", process->RemainingCpuBurstTime);
-  printf("TimeInCpu - %f\n", process->TimeInCpu);
-  printf("IOBurstTime - %f\n", process->IOBurstTime);
-  printf("TimeIOBurstDone - %f\n", process->TimeIOBurstDone);
-  printf("---\n");
+  // printf("---\n");
+  // printf("TotalJobDuration - %f\n", process->TotalJobDuration);
+  // printf("CpuBurstTime - %f\n", process->CpuBurstTime);
+  // printf("RemainingCpuBurstTime - %f\n", process->RemainingCpuBurstTime);
+  // printf("TimeInCpu - %f\n", process->TimeInCpu);
+  // printf("IOBurstTime - %f\n", process->IOBurstTime);
+  // printf("TimeIOBurstDone - %f\n", process->TimeIOBurstDone);
+  // printf("---\n");
 
   // Place process on CPU if it needs to run
-  if (process->RemainingCpuBurstTime > 0) {
+  if (process->TotalJobDuration < process->TimeInCpu
+    && process->RemainingCpuBurstTime > 0
+  ) {
     TimePeriod burstTime;
     switch (whichPolicy) {
       case FCFS: burstTime = process->RemainingCpuBurstTime; break;
       case SJF: burstTime = process->RemainingCpuBurstTime; break;
-      case RR: burstTime = min(process->RemainingCpuBurstTime, Quantum);
+      case RR: burstTime = min(
+        min(process->RemainingCpuBurstTime, Quantum),
+        (process->TotalJobDuration - process->TimeInCpu)
+      );
     }
     // This seems to not mutate the process at all
     OnCPU(process, burstTime);
     // so we will mutate it manually!
     process->RemainingCpuBurstTime = process->RemainingCpuBurstTime - burstTime;
     process->TimeInCpu = process->TimeInCpu + burstTime;
-    // place it back in the running queue for IO to handle
-    EnqueueProcess(RUNNINGQUEUE, process);
   }
 
-  else {
-    process = DequeueProcess(RUNNINGQUEUE);
+  // Check if the process is finished!
+  if (process->TimeInCpu >= process->TotalJobDuration
+    && process->TimeIOBurstDone != 0
+    && process->TimeIOBurstDone <= Now()
+  ) {
     process->state = DONE;
     EnqueueProcess(EXITQUEUE, process);
     // Book-keeping
@@ -276,6 +282,9 @@ void Dispatcher(Identifier whichPolicy) {
     SumMetrics[CBT] = SumMetrics[CBT] + (process->TimeInCpu);
     SumMetrics[WT] = SumMetrics[WT] + (process->TimeInReadyQueue);
     // End Book-keeping
+  }
+  else {
+    EnqueueProcess(RUNNINGQUEUE, process);
   }
 }
 
