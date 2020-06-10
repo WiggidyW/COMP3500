@@ -159,7 +159,11 @@ void CPUScheduler(Identifier whichPolicy) {
     case RR   : selectedProcess = RR_Scheduler();
   }
   if (selectedProcess) {
-    selectedProcess->state = RUNNING; // Process state becomes Running                                     
+    selectedProcess->state = RUNNING; // Process state becomes Running
+    // Update time in ready queue
+    selectedProcess->TimeInReadyQueue = selectedProcess->TimeInReadyQueue + (
+      Now() - selectedProcess->JobStartTime
+    );
     EnqueueProcess(RUNNINGQUEUE, selectedProcess); // Put process in Running Queue                         
   }
 }
