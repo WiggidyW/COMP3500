@@ -260,8 +260,8 @@ void Dispatcher(Identifier whichPolicy) {
     process->TimeInCpu = process->TimeInCpu + burstTime;
 
     print("--From OnCpu--\n");
-    printf("PID - %i\n", process->)
-    printf("JobArrivalTime - %f\n", process->JobArrivalTime)
+    printf("PID - %i\n", process->ProcessID);
+    printf("JobArrivalTime - %f\n", process->JobArrivalTime);
     printf("TotalJobDuration - %f\n", process->TotalJobDuration);
     printf("TimeInCpu - %f\n", process->TimeInCpu);
     printf("CpuBurstTime - %f\n", process->CpuBurstTime);
@@ -282,8 +282,8 @@ void Dispatcher(Identifier whichPolicy) {
   else {
 
     print("--From Exit--\n");
-    printf("PID - %i\n", process->)
-    printf("JobArrivalTime - %f\n", process->JobArrivalTime)
+    printf("PID - %i\n", process->ProcessID);
+    printf("JobArrivalTime - %f\n", process->JobArrivalTime);
     printf("TotalJobDuration - %f\n", process->TotalJobDuration);
     printf("TimeInCpu - %f\n", process->TimeInCpu);
     printf("CpuBurstTime - %f\n", process->CpuBurstTime);
