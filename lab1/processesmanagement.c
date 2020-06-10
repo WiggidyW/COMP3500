@@ -231,12 +231,12 @@ void Dispatcher(Identifier whichPolicy) {
 
   // Do nothing if queue is empty
   if (process == NULL) {
-    return();
+    return;
   }
 
   // Place process on CPU if it needs to run
   if (process->RemainingCpuBurstTime > 0) {
-    burstTime TimePeriod;
+    TimePeriod burstTime;
     switch (whichPolicy) {
       case FCFS: burstTime = process->RemainingCpuBurstTime; break;
       case SJF: burstTime = process->RemainingCpuBurstTime; break;
