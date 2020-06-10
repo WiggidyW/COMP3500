@@ -227,8 +227,28 @@ ProcessControlBlock *RR_Scheduler() {
 *              else move process from running queue to Exit Queue       *     
 \***********************************************************************/
 void Dispatcher(Identifier whichPolicy) {
-  double start;
-  //
+  ProcessControlBlock *process = DequeueProcess(RUNNINGQUEUE);
+
+  // Do nothing if queue is empty
+  if (process == NULL) {
+    return();
+  }
+
+  // Place process on CPU if it needs to run
+  if (process->RemainingCpuBurstTime > 0) {
+    burstTime TimePeriod;
+    switch (whichPolicy) {
+      case FCFS: burstTime = process->RemainingCpuBurstTime; break;
+      case SJF: burstTime = process->RemainingCpuBurstTime; break;
+      case RR: burstTime = min(process->RemainingCpuBurstTime, Quantum);
+    }
+    OnCPU(process, burstTime);
+  }
+
+  // Put the process in the exit queue if it's finished
+  if (process->RemainingCpuBurstTime == 0) {
+    EnqueueProcess(EXITQUEUE, process);
+  }
 }
 
 /***********************************************************************\
