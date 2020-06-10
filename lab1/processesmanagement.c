@@ -236,7 +236,7 @@ void Dispatcher(Identifier whichPolicy) {
     return;
   }
 
-  printf("---\n")
+  printf("---\n");
   printf("TotalJobDuration - %f\n", process->TotalJobDuration);
   printf("CpuBurstTime - %f\n", process->CpuBurstTime);
   printf("RemainingCpuBurstTime - %f\n", process->RemainingCpuBurstTime);
