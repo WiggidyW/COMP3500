@@ -229,7 +229,7 @@ ProcessControlBlock *RR_Scheduler() {
 void Dispatcher(Identifier whichPolicy) {
   #define min(a,b) (((a) < (b)) ? (a) : (b))
 
-  ProcessControlBlock *process = Queues[RUNNINGQUEUE].Tail;
+  ProcessControlBlock *process = DequeueProcess(RUNNINGQUEUE);
 
   // Do nothing if queue is empty
   if (process == NULL) {
@@ -241,6 +241,8 @@ void Dispatcher(Identifier whichPolicy) {
   printf("CpuBurstTime - %f\n", process->CpuBurstTime);
   printf("RemainingCpuBurstTime - %f\n", process->RemainingCpuBurstTime);
   printf("TimeInCpu - %f\n", process->TimeInCpu);
+  printf("IOBurstTime - %f\n", process->IOBurstTime);
+  printf("TimeIOBurstDone - %f\n", process->TimeIOBurstDone);
   printf("---\n");
 
   // Place process on CPU if it needs to run
@@ -251,7 +253,13 @@ void Dispatcher(Identifier whichPolicy) {
       case SJF: burstTime = process->RemainingCpuBurstTime; break;
       case RR: burstTime = min(process->RemainingCpuBurstTime, Quantum);
     }
+    // This seems to not mutate the process at all
     OnCPU(process, burstTime);
+    // // so we will mutate it manually!
+    // process->RemainingCpuBurstTime = process->RemainingCpuBurstTime - burstTime;
+    // process->TimeInCpu = process->TimeInCpu + burstTime;
+    // // place it back in the running queue for IO to handle
+    // EnqueueProcess(process, RUNNINGQUEUE);
   }
 
   // // Put it back if it isn't done
