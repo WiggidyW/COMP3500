@@ -282,6 +282,9 @@ void BookKeeping(void){
   double end = Now(); // Total time for all processes to arrive
   Metric m;
   ProcessControlBlock *process;
+
+  DisplayQueue("Exit", EXITQUEUE);
+  DisplayQueue("Ready", READYQUEUE);
   
   process = Queues[EXITQUEUE].Tail;
   while (process != NULL) {
