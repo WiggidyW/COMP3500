@@ -245,11 +245,13 @@ void Dispatcher(Identifier whichPolicy) {
       case RR: burstTime = min(process->RemainingCpuBurstTime, Quantum);
     }
     OnCPU(process, burstTime);
+    printf("Ran process!");
   }
 
   // Put it back if it isn't done
   if (process->RemainingCpuBurstTime > 0) {
     EnqueueProcess(RUNNINGQUEUE, process);
+    printf("Putting it back in run queue!");
   }
   // Put the process in the exit queue if it's finished
   else {
@@ -265,6 +267,7 @@ void Dispatcher(Identifier whichPolicy) {
     // End Book-keeping
     process->state = DONE;
     EnqueueProcess(EXITQUEUE, process);
+    printf("Putting it in exit queue!");
   }
 }
 
