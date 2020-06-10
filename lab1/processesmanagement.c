@@ -236,8 +236,6 @@ void Dispatcher(Identifier whichPolicy) {
     return;
   }
 
-  printf("StartCpuTime - %f\n", process->StartCpuTime);
-
   // printf("---\n");
   // printf("TotalJobDuration - %f\n", process->TotalJobDuration);
   // printf("CpuBurstTime - %f\n", process->CpuBurstTime);
@@ -266,6 +264,7 @@ void Dispatcher(Identifier whichPolicy) {
     }
     process->RemainingCpuBurstTime = process->RemainingCpuBurstTime - burstTime;
     process->TimeInCpu = process->TimeInCpu + burstTime;
+    printf("StartCpuTime - %f\n", process->StartCpuTime);
   }
 
   // The process is finished!
