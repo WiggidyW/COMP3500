@@ -259,7 +259,7 @@ void Dispatcher(Identifier whichPolicy) {
     process->RemainingCpuBurstTime = process->RemainingCpuBurstTime - burstTime;
     process->TimeInCpu = process->TimeInCpu + burstTime;
 
-    print("--From OnCpu--\n");
+    printf("--From OnCpu--\n");
     printf("PID - %i\n", process->ProcessID);
     printf("JobArrivalTime - %f\n", process->JobArrivalTime);
     printf("TotalJobDuration - %f\n", process->TotalJobDuration);
@@ -275,13 +275,13 @@ void Dispatcher(Identifier whichPolicy) {
     printf("TimeInReadyQueue - %f\n", process->TimeInReadyQueue);
     printf("TimeInWaitQueue - %f\n", process->TimeInWaitQueue);
     printf("TimeInJobQueue - %f\n", process->TimeInJobQueue);
-    print("---\n");
+    printf("---\n");
   }
 
   // The process is finished!
   else {
 
-    print("--From Exit--\n");
+    printf("--From Exit--\n");
     printf("PID - %i\n", process->ProcessID);
     printf("JobArrivalTime - %f\n", process->JobArrivalTime);
     printf("TotalJobDuration - %f\n", process->TotalJobDuration);
@@ -297,7 +297,7 @@ void Dispatcher(Identifier whichPolicy) {
     printf("TimeInReadyQueue - %f\n", process->TimeInReadyQueue);
     printf("TimeInWaitQueue - %f\n", process->TimeInWaitQueue);
     printf("TimeInJobQueue - %f\n", process->TimeInJobQueue);
-    print("---\n");
+    printf("---\n");
 
     process = DequeueProcess(RUNNINGQUEUE);
     process->state = DONE;
