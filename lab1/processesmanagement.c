@@ -249,6 +249,16 @@ void Dispatcher(Identifier whichPolicy) {
 
   // Put the process in the exit queue if it's finished
   if (process->RemainingCpuBurstTime == 0) {
+    // Book-keeping
+    NumberofJobs[TAT]++;
+    NumberofJobs[RT]++;
+    NumberofJobs[WT]++;
+    NumberofJobs[THGT]++;
+    SumMetrics[TAT] = SumMetrics[TAT] + (process->JobExitTime - process->JobArrivalTime);
+    SumMetrics[RT] = SumMetrics[RT] + (process->StartCpuTime - process->JobArrivalTime);
+    SumMetrics[CBT] = SumMetrics[CBT] + (process->TimeInCpu);
+    SumMetrics[WT] = SumMetrics[WT] + (process->TimeInReadyQueue);
+    // End Book-keeping
     EnqueueProcess(EXITQUEUE, process);
   }
 }
@@ -281,27 +291,6 @@ void NewJobIn(ProcessControlBlock whichProcess){
 void BookKeeping(void){
   double end = Now(); // Total time for all processes to arrive
   Metric m;
-  ProcessControlBlock *process;
-
-  DisplayQueue("Exit", EXITQUEUE);
-  DisplayQueue("Ready", READYQUEUE);
-  
-  process = Queues[EXITQUEUE].Tail;
-  while (process != NULL) {
-    NumberofJobs[TAT]++;
-    NumberofJobs[RT]++;
-    NumberofJobs[CBT]++;
-    NumberofJobs[WT]++;
-    NumberofJobs[THGT]++;
-    SumMetrics[TAT] = SumMetrics[TAT] + (process->JobExitTime - process->JobArrivalTime);
-    SumMetrics[RT] = SumMetrics[RT] + (process->StartCpuTime - process->JobArrivalTime);
-    SumMetrics[CBT] = SumMetrics[CBT] + (process->TimeInCpu);
-    SumMetrics[WT] = SumMetrics[WT] + (process->TimeInReadyQueue);
-    process = process->previous;
-  }
-
-  // Compute averages and final results
-  // ........
 
   printf("\n********* Processes Managemenent Numbers ******************************\n");
   printf("Policy Number = %d, Quantum = %.6f   Show = %d\n", PolicyNumber, Quantum, Show);
