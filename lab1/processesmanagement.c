@@ -229,12 +229,14 @@ ProcessControlBlock *RR_Scheduler() {
 void Dispatcher(Identifier whichPolicy) {
   #define min(a,b) (((a) < (b)) ? (a) : (b))
 
-  ProcessControlBlock *process = DequeueProcess(RUNNINGQUEUE);
+  ProcessControlBlock *process = Queues[RUNNINGQUEUE].Tail;
 
   // Do nothing if queue is empty
   if (process == NULL) {
     return;
   }
+
+  printf("StartCpuTime - %f\n", process->StartCpuTime);
 
   // printf("---\n");
   // printf("TotalJobDuration - %f\n", process->TotalJobDuration);
@@ -246,9 +248,7 @@ void Dispatcher(Identifier whichPolicy) {
   // printf("---\n");
 
   // Place process on CPU if it needs to run
-  if (process->TotalJobDuration < process->TimeInCpu
-    && process->RemainingCpuBurstTime > 0
-  ) {
+  if (process->TotalJobDuration < process->TimeInCpu) {
     TimePeriod burstTime;
     switch (whichPolicy) {
       case FCFS: burstTime = process->RemainingCpuBurstTime; break;
@@ -264,12 +264,10 @@ void Dispatcher(Identifier whichPolicy) {
     process->RemainingCpuBurstTime = process->RemainingCpuBurstTime - burstTime;
     process->TimeInCpu = process->TimeInCpu + burstTime;
   }
-
-  // Check if the process is finished!
-  if (process->TimeInCpu >= process->TotalJobDuration
-    && process->TimeIOBurstDone != 0
-    && process->TimeIOBurstDone <= Now()
-  ) {
+  
+  // The process is finished!
+  else {
+    process = DequeueProcess(RUNNINGQUEUE);
     process->state = DONE;
     EnqueueProcess(EXITQUEUE, process);
     // Book-keeping
@@ -282,9 +280,6 @@ void Dispatcher(Identifier whichPolicy) {
     SumMetrics[CBT] = SumMetrics[CBT] + (process->TimeInCpu);
     SumMetrics[WT] = SumMetrics[WT] + (process->TimeInReadyQueue);
     // End Book-keeping
-  }
-  else {
-    EnqueueProcess(RUNNINGQUEUE, process);
   }
 }
 
