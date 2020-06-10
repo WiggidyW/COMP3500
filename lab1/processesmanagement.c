@@ -271,14 +271,14 @@ void Dispatcher(Identifier whichPolicy) {
     process->JobExitTime = Now();
     EnqueueProcess(EXITQUEUE, process);
     // Book-keeping
-    // NumberofJobs[TAT]++;
-    // NumberofJobs[RT]++;
-    // NumberofJobs[WT]++;
-    // NumberofJobs[THGT]++;
-    // SumMetrics[TAT] = SumMetrics[TAT] + (process->JobExitTime - process->JobArrivalTime);
-    // SumMetrics[RT] = SumMetrics[RT] + (process->StartCpuTime - process->JobArrivalTime);
-    // SumMetrics[CBT] = SumMetrics[CBT] + (process->TimeInCpu);
-    // SumMetrics[WT] = SumMetrics[WT] + (process->TimeInReadyQueue);
+    NumberofJobs[TAT]++;
+    NumberofJobs[RT]++;
+    NumberofJobs[WT]++;
+    NumberofJobs[THGT]++;
+    SumMetrics[TAT] = SumMetrics[TAT] + (process->JobExitTime - process->JobArrivalTime);
+    SumMetrics[RT] = SumMetrics[RT] + (process->StartCpuTime - process->JobArrivalTime);
+    SumMetrics[CBT] = SumMetrics[CBT] + (process->TimeInCpu);
+    SumMetrics[WT] = SumMetrics[WT] + (process->TimeInReadyQueue);
     // End Book-keeping
   }
 }
