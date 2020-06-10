@@ -246,7 +246,7 @@ void Dispatcher(Identifier whichPolicy) {
   // printf("---\n");
 
   // Place process on CPU if it needs to run
-  if (process->TotalJobDuration < process->TimeInCpu) {
+  if (process->TotalJobDuration > process->TimeInCpu) {
     TimePeriod burstTime;
     switch (whichPolicy) {
       case FCFS: burstTime = process->RemainingCpuBurstTime; break;
@@ -282,6 +282,7 @@ void Dispatcher(Identifier whichPolicy) {
     SumMetrics[CBT] = SumMetrics[CBT] + (process->TimeInCpu);
     SumMetrics[WT] = SumMetrics[WT] + (process->TimeInReadyQueue);
     // End Book-keeping
+    printf("StartCpuTime - %f\n", process->StartCpuTime);
   }
 }
 
