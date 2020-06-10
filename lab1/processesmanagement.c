@@ -236,6 +236,13 @@ void Dispatcher(Identifier whichPolicy) {
     return;
   }
 
+  printf("---\n")
+  printf("TotalJobDuration - %f\n", process->TotalJobDuration);
+  printf("CpuBurstTime - %f\n", process->CpuBurstTime);
+  printf("RemainingCpuBurstTime - %f\n", process->RemainingCpuBurstTime);
+  printf("TimeInCpu - %f\n", process->TimeInCpu);
+  printf("---\n");
+
   // Place process on CPU if it needs to run
   if (process->RemainingCpuBurstTime > 0) {
     TimePeriod burstTime;
@@ -244,14 +251,12 @@ void Dispatcher(Identifier whichPolicy) {
       case SJF: burstTime = process->RemainingCpuBurstTime; break;
       case RR: burstTime = min(process->RemainingCpuBurstTime, Quantum);
     }
-    printf("start - %f\n", process->RemainingCpuBurstTime);
     OnCPU(process, burstTime);
   }
 
   // Put it back if it isn't done
   if (process->RemainingCpuBurstTime > 0) {
     EnqueueProcess(RUNNINGQUEUE, process);
-    printf("end - %f\n", process->RemainingCpuBurstTime);
   }
   // Put the process in the exit queue if it's finished
   else {
@@ -267,7 +272,6 @@ void Dispatcher(Identifier whichPolicy) {
     // End Book-keeping
     process->state = DONE;
     EnqueueProcess(EXITQUEUE, process);
-    printf("Putting it in exit queue!");
   }
 }
 
