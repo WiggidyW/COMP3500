@@ -236,23 +236,17 @@ void Dispatcher(Identifier whichPolicy) {
     return;
   }
 
-  // printf("---\n");
-  // printf("TotalJobDuration - %f\n", process->TotalJobDuration);
-  // printf("CpuBurstTime - %f\n", process->CpuBurstTime);
-  // printf("RemainingCpuBurstTime - %f\n", process->RemainingCpuBurstTime);
-  // printf("TimeInCpu - %f\n", process->TimeInCpu);
-  // printf("IOBurstTime - %f\n", process->IOBurstTime);
-  // printf("TimeIOBurstDone - %f\n", process->TimeIOBurstDone);
-  // printf("---\n");
-
   // Place process on CPU if it needs to run
   if (process->TotalJobDuration > process->TimeInCpu) {
     TimePeriod burstTime;
     switch (whichPolicy) {
-      case FCFS: burstTime = process->RemainingCpuBurstTime; break;
-      case SJF: burstTime = process->RemainingCpuBurstTime; break;
-      case RR: burstTime = min(
-        min(process->RemainingCpuBurstTime, Quantum),
+      case FCFS: burstTime = process->RemainingCpuBurstTime; break; // rem. time
+      case SJF: burstTime = process->RemainingCpuBurstTime; break; // rem. time
+      case RR: burstTime = min( // min of 3 values
+        min(
+          process->RemainingCpuBurstTime,
+          Quantum
+        ),
         (process->TotalJobDuration - process->TimeInCpu)
       );
     }
@@ -260,17 +254,54 @@ void Dispatcher(Identifier whichPolicy) {
     OnCPU(process, burstTime);
     // so we will mutate it manually!
     if (process->StartCpuTime == 0) {
-      process->StartCpuTime = Now() - burstTime;
+      process->StartCpuTime = Now();
     }
     process->RemainingCpuBurstTime = process->RemainingCpuBurstTime - burstTime;
     process->TimeInCpu = process->TimeInCpu + burstTime;
+
+    print("--From OnCpu--\n");
+    printf("PID - %i\n", process->)
+    printf("JobArrivalTime - %f\n", process->JobArrivalTime)
+    printf("TotalJobDuration - %f\n", process->TotalJobDuration);
+    printf("TimeInCpu - %f\n", process->TimeInCpu);
+    printf("CpuBurstTime - %f\n", process->CpuBurstTime);
+    printf("RemainingCpuBurstTime - %f\n", process->RemainingCpuBurstTime);
+    printf("IOBurstTime - %f\n", process->IOBurstTime);
+    printf("TimeIOBurstDone - %f\n", process->TimeIOBurstDone);
+    printf("JobStartTime - %f\n", process->JobStartTime);
     printf("StartCpuTime - %f\n", process->StartCpuTime);
+    printf("TimeEnterWaiting - %f\n", process->TimeEnterWaiting);
+    printf("JobExitTime - %f\n", process->JobExitTime);
+    printf("TimeInReadyQueue - %f\n", process->TimeInReadyQueue);
+    printf("TimeInWaitQueue - %f\n", process->TimeInWaitQueue);
+    printf("TimeInJobQueue - %f\n", process->TimeInJobQueue);
+    print("---\n");
   }
 
   // The process is finished!
   else {
+
+    print("--From Exit--\n");
+    printf("PID - %i\n", process->)
+    printf("JobArrivalTime - %f\n", process->JobArrivalTime)
+    printf("TotalJobDuration - %f\n", process->TotalJobDuration);
+    printf("TimeInCpu - %f\n", process->TimeInCpu);
+    printf("CpuBurstTime - %f\n", process->CpuBurstTime);
+    printf("RemainingCpuBurstTime - %f\n", process->RemainingCpuBurstTime);
+    printf("IOBurstTime - %f\n", process->IOBurstTime);
+    printf("TimeIOBurstDone - %f\n", process->TimeIOBurstDone);
+    printf("JobStartTime - %f\n", process->JobStartTime);
+    printf("StartCpuTime - %f\n", process->StartCpuTime);
+    printf("TimeEnterWaiting - %f\n", process->TimeEnterWaiting);
+    printf("JobExitTime - %f\n", process->JobExitTime);
+    printf("TimeInReadyQueue - %f\n", process->TimeInReadyQueue);
+    printf("TimeInWaitQueue - %f\n", process->TimeInWaitQueue);
+    printf("TimeInJobQueue - %f\n", process->TimeInJobQueue);
+    print("---\n");
+
     process = DequeueProcess(RUNNINGQUEUE);
     process->state = DONE;
+    process->JobExitTime = Now();
     EnqueueProcess(EXITQUEUE, process);
     // Book-keeping
     NumberofJobs[TAT]++;
@@ -282,7 +313,6 @@ void Dispatcher(Identifier whichPolicy) {
     SumMetrics[CBT] = SumMetrics[CBT] + (process->TimeInCpu);
     SumMetrics[WT] = SumMetrics[WT] + (process->TimeInReadyQueue);
     // End Book-keeping
-    printf("StartCpuTime - %f\n", process->StartCpuTime);
   }
 }
 
