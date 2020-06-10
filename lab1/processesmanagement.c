@@ -227,6 +227,8 @@ ProcessControlBlock *RR_Scheduler() {
 *              else move process from running queue to Exit Queue       *     
 \***********************************************************************/
 void Dispatcher(Identifier whichPolicy) {
+  #define min(a,b) (((a) < (b)) ? (a) : (b))
+
   ProcessControlBlock *process = DequeueProcess(RUNNINGQUEUE);
 
   // Do nothing if queue is empty
