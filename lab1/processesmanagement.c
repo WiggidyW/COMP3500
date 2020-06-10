@@ -191,6 +191,11 @@ ProcessControlBlock *SJF_Scheduler() {
 
   // Get a pointer to the shortest process in the queue
   ProcessControlBlock *shortestProcess = Queues[READYQUEUE].Tail;
+  // if the queue is empty, return null
+  if (shortestProcess == NULL) {
+    return (ProcessControlBlock *) NULL;
+  }
+
   ProcessControlBlock *currentProcess = shortestProcess->previous;
   while (currentProcess != NULL) {
     if (currentProcess->RemainingCpuBurstTime < shortestProcess->RemainingCpuBurstTime) {
