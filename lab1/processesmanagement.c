@@ -255,18 +255,13 @@ void Dispatcher(Identifier whichPolicy) {
     }
     // This seems to not mutate the process at all
     OnCPU(process, burstTime);
-    // // so we will mutate it manually!
-    // process->RemainingCpuBurstTime = process->RemainingCpuBurstTime - burstTime;
-    // process->TimeInCpu = process->TimeInCpu + burstTime;
-    // // place it back in the running queue for IO to handle
-    // EnqueueProcess(process, RUNNINGQUEUE);
+    // so we will mutate it manually!
+    process->RemainingCpuBurstTime = process->RemainingCpuBurstTime - burstTime;
+    process->TimeInCpu = process->TimeInCpu + burstTime;
+    // place it back in the running queue for IO to handle
+    EnqueueProcess(process, RUNNINGQUEUE);
   }
-
-  // // Put it back if it isn't done
-  // if (process->RemainingCpuBurstTime > 0) {
-  //   EnqueueProcess(RUNNINGQUEUE, process);
-  // }
-  // Put the process in the exit queue if it's finished
+  
   else {
     process = DequeueProcess(RUNNINGQUEUE);
     process->state = DONE;
