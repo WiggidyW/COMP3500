@@ -281,6 +281,21 @@ void NewJobIn(ProcessControlBlock whichProcess){
 void BookKeeping(void){
   double end = Now(); // Total time for all processes to arrive
   Metric m;
+  ProcessControlBlock *process;
+  
+  process = Queues[EXITQUEUE].Tail;
+  while (process != NULL) {
+    NumberOfJobs[TAT]++;
+    NumberOfJobs[RT]++;
+    NumberOfJobs[CBT]++;
+    NumberOfJobs[WT]++;
+    NumberOfJobs[THGT]++;
+    SumMetrics[TAT] = SumMetrics[TAT] + (process->JobExitTime - process->JobArrivalTime);
+    SumMetrics[RT] = SumMetrics[RT] + (process->StartCpuTime - process->JobArrivalTime);
+    SumMetrics[CBT] = SumMetrics[CBT] + (process->TimeInCpu);
+    SumMetrics[WT] = SumMetrics[WT] + (process->TimeInReadyQueue);
+    process = process->previous;
+  }
 
   // Compute averages and final results
   // ........
