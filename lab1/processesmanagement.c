@@ -285,11 +285,11 @@ void BookKeeping(void){
   
   process = Queues[EXITQUEUE].Tail;
   while (process != NULL) {
-    NumberOfJobs[TAT] = NumberOfJobs[TAT] + 1;
-    NumberOfJobs[RT] = NumberOfJobs[RT] + 1;
-    NumberOfJobs[CBT] = NumberOfJobs[CBT] + 1;
-    NumberOfJobs[WT] = NumberOfJobs[WT] + 1;
-    NumberOfJobs[THGT] = NumberOfJobs[THGT] + 1;
+    NumberofJobs[TAT]++;
+    NumberofJobs[RT]++;
+    NumberofJobs[CBT]++;
+    NumberofJobs[WT]++;
+    NumberofJobs[THGT]++;
     SumMetrics[TAT] = SumMetrics[TAT] + (process->JobExitTime - process->JobArrivalTime);
     SumMetrics[RT] = SumMetrics[RT] + (process->StartCpuTime - process->JobArrivalTime);
     SumMetrics[CBT] = SumMetrics[CBT] + (process->TimeInCpu);
@@ -304,11 +304,11 @@ void BookKeeping(void){
   printf("Policy Number = %d, Quantum = %.6f   Show = %d\n", PolicyNumber, Quantum, Show);
   printf("Number of Completed Processes = %d\n", NumberofJobs[THGT]);
   printf("ATAT=%f   ART=%f  CBT = %f  T=%f AWT=%f\n", 
-	  SumMetrics[TAT] / NumberOfJobs[TAT],
-    SumMetrics[RT] / NumberOfJobs[RT],
+	  SumMetrics[TAT] / NumberofJobs[TAT],
+    SumMetrics[RT] / NumberofJobs[RT],
     SumMetrics[CBT] / Now(),
 	  NumberofJobs[THGT] / Now(),
-    SumMetrics[WT] / NumberOfJobs[WT]
+    SumMetrics[WT] / NumberofJobs[WT]
   );
 
   exit(0);
