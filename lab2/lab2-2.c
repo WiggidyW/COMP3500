@@ -21,55 +21,44 @@ void add_n(int *ptr, int increment){
   }
 }
 
+/**********************************************************\
+ * Function: set value to non-atomic value atomically      *
+ * argument: ptr (address of the value), n                 *
+ * output  : nothing                                       *
+ **********************************************************/
+void set_n(int *ptr, int n) {
+  *ptr = n;
+  if (*ptr != n) {
+    set_n(ptr, n);
+  }
+}
+
 int main(){
+  typedef int array[4];
+
   int pid;        /* Process ID                     */
-
-  int *countptr;  /* pointer to the counter         */
-  int *interested0;
-  int *interested1;
-  int *turn;
-
   int fd;     /* file descriptor to the file "containing" my counter */
-  int interested0_fd;
-  int interested1_fd;
-  int turn_fd;
-  int zero = 0; /* a dummy variable containing 0 */
+  array *countptr;  /* pointer to the counter         */
+  array zero = {0, 0, 0, 0}; /* a dummy variable containing 0 */
 
   system("rm -f counter");
-  system("rm -f interested0");
-  system("rm -f interested1");
-  system("rm -f turn");
 
   /* create a file which will "contain" my shared variable */
-  fd = open("counter", O_RDWR | O_CREAT);
-  interested0_fd = open("interested0", O_RDWR | O_CREAT);
-  interested1_fd = open("interested1", O_RDWR | O_CREAT);
-  turn_fd = open("turn", O_RDWR | O_CREAT);
-
-  write(fd, &zero, sizeof(int));
-  write(interested0_fd, &zero, sizeof(int));
-  write(interested1_fd, &zero, sizeof(int));
-  write(turn_fd, &zero, sizeof(int));
+  fd = open("counter",O_RDWR | O_CREAT);
+  write(fd,&zero,sizeof(array));
 
   /* map my file to memory */
-  countptr = (int *) mmap(NULL, sizeof(int), PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-  interested0 = (int *) mmap(NULL, sizeof(int), PROT_READ | PROT_WRITE, MAP_SHARED, interested0_fd, 0);
-  interested1 = (int *) mmap(NULL, sizeof(int), PROT_READ | PROT_WRITE, MAP_SHARED, interested1_fd, 0);
-  turn = (int *) mmap(NULL, sizeof(int), PROT_READ | PROT_WRITE, MAP_SHARED, turn_fd, 0);
- 
-  if (!countptr || !interested0 || !interested1 || !turn) {
+  countptr = (array *) mmap(NULL, sizeof(int), PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+
+  if (!countptr) {
     printf("Mapping failed\n");
     exit(1);
   }
-  *turn = 0;
-  *countptr = 0;
-  *interested0 = 0;
-  *interested1 = 0;
+  *countptr[0] = 0; // counter
+  *countptr[1] = 0; // interested0
+  *countptr[2] = 0; // interested1
 
   close(fd);
-  close(interested0_fd);
-  close(interested1_fd);
-  close(turn_fd);
 
   setbuf(stdout,NULL);
 
@@ -79,57 +68,52 @@ int main(){
     exit(1);
   }
 
+  int counter; // value for storing counter intermittently
+
   if (pid == 0) {
     /* The child increments the counter by two's */
     while (1) {
-      *interested0 = 1;
-      *turn = 1;
-      while (*interested1 == 1 && *turn == 1);
-      printf("Child Entered!\n");
-      if (*countptr < nloop) {
-        add_n(countptr,2);
-        printf("Child process -->> counter= %d\n",*countptr);
-        *interested0 = 0;
-      }
-      else {
-        *interested0 = 0;
-        break;
+      *countptr[1]/*interested0*/ = 1;
+      set_n(countptr[3]/*turn*/, 1);
+      if (
+        (*countptr[1]/*interested0*/, *countptr[2]/*interested1*/) == (1, 0) ||
+        (*countptr[1]/*interested0*/, *countptr[3]/*turn*/) == (1, 0)
+      ) {
+        counter = *countptr[0];
+        if (counter < nloop) {
+          add_n(&counter, 2);
+          printf("Child process -->> counter= %d\n", counter);
+          *countptr[0] = counter;
+          *countptr[1]/*interested0*/ = 0;
+        } else {
+          *countptr[1]/*interested0*/ = 0;
+          break;
+        }
       }
     }
     close(fd);
-    close(interested0_fd);
-    close(interested1_fd);
-    close(turn_fd);
   }
   else {
     /* The parent increments the counter by twenty's */
     while (1) {
-      *interested1 = 1;
-      *turn = 0;
-      while (*interested0 == 0 && *turn == 0);
-      printf("Parent Entered!\n");
-      if (*countptr < nloop) {
-        add_n(countptr,20);
-        printf("Parent process -->> counter = %d\n",*countptr);
-        *interested1 = 0;
-      }
-      else {
-        *interested1 = 0;
-        break;
+      *countptr[2]/*interested1*/ = 1;
+      set_n(countptr[3]/*turn*/, 0);
+      if (
+        (*countptr[2]/*interested1*/, *countptr[1]/*interested0*/) == (1, 0) ||
+        (*countptr[2]/*interested1*/, *countptr[3]/*turn*/) == (1, 1)
+      ) {
+        counter = *countptr[0];
+        if (counter < nloop) {
+          add_n(&counter, 20);
+          printf("Parent process -->> counter = %d\n", counter);
+          *countptr[0] = counter;
+          *countptr[2]/*interested1*/ = 0;
+        } else {
+          *countptr[2]/*interested1*/ = 0;
+          break;
+        }
       }
     }
     close(fd);
-    close(interested0_fd);
-    close(interested1_fd);
-    close(turn_fd);
   }
 }
-
-
-
-
-
-
-
-
-
