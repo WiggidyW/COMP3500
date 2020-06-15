@@ -61,6 +61,7 @@ int main(){
     printf("Mapping failed\n");
     exit(1);
   }
+  *turn = 0;
   *countptr = 0;
   *interested0 = 0;
   *interested1 = 0;
@@ -80,27 +81,47 @@ int main(){
 
   if (pid == 0) {
     /* The child increments the counter by two's */
-    while (*countptr < nloop){
+    while (1) {
       *interested0 = 1;
       *turn = 1;
       while (*interested1 == 1 && *turn == 1);
-      add_n(countptr,2);
-      printf("Child process -->> counter= %d\n",*countptr);
-      *interested0 = 0;
+      printf("Child Entered!\n");
+      if (*countptr < nloop) {
+        add_n(countptr,2);
+        printf("Child process -->> counter= %d\n",*countptr);
+        *interested0 = 0;
+      }
+      else {
+        *interested0 = 0;
+        break;
+      }
     }
     close(fd);
+    close(interested0_fd);
+    close(interested1_fd);
+    close(turn_fd);
   }
   else {
     /* The parent increments the counter by twenty's */
-    while (*countptr < nloop){
+    while (1) {
       *interested1 = 1;
       *turn = 0;
       while (*interested0 == 0 && *turn == 0);
-      add_n(countptr,20);
-      printf("Parent process -->> counter = %d\n",*countptr);
-      *interested1 = 0;
+      printf("Parent Entered!\n");
+      if (*countptr < nloop) {
+        add_n(countptr,20);
+        printf("Parent process -->> counter = %d\n",*countptr);
+        *interested1 = 0;
+      }
+      else {
+        *interested1 = 0;
+        break;
+      }
     }
     close(fd);
+    close(interested0_fd);
+    close(interested1_fd);
+    close(turn_fd);
   }
 }
 
