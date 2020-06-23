@@ -47,7 +47,7 @@ Quantity NumberofJobs[MAXMETRICS]; // Number of Jobs for which metric was collec
 Average  SumMetrics[MAXMETRICS]; // Sum for each Metrics
 
 int* MemoryTable = NULL; // Table that holds the page slots
-Memory* TableSize = NULL; // Size of the memory table
+Memory TableSize = *(Memory *) NULL; // Size of the memory table
 
 /*****************************************************************************\
 *                               Function prototypes                           *
@@ -93,12 +93,12 @@ void ManageProcesses(void){
   
   // allocate the memory table!
   Memory m;
-  *TableSize = sizeof (Memory) * ((AvailableMemory / PAGESIZE) + 1);
-  MemoryTable = malloc(*TableSize);
-  for (m = 0; m < *TableSize - 1; m++) {
+  TableSize = sizeof (Memory) * ((AvailableMemory / PAGESIZE) + 1);
+  MemoryTable = malloc(TableSize);
+  for (m = 0; m < TableSize - 1; m++) {
     MemoryTable[m] = 0;
   }
-  MemoryTable[*TableSize - 1] = 1; // assists our mapping
+  MemoryTable[TableSize - 1] = 1; // assists our mapping
   
   while (1) {
     IO();
@@ -211,13 +211,13 @@ Memory FindBestFitIndex(Memory size) {
   Memory innerSize = size / PAGESIZE;
   Memory m;
   printf("table size - %u, inner size - %u,\n", TableSize, innerSize);
-  Memory bestFitIndex = *TableSize; // index of the table slot that is the best fit
-  Memory currentIndex = *TableSize; // index of the current (first 0) table slot
+  Memory bestFitIndex = TableSize; // index of the table slot that is the best fit
+  Memory currentIndex = TableSize; // index of the current (first 0) table slot
   Memory bestFitCount = 0;
   Memory currentCount = 0;
-  for (m = 0; m < *TableSize; m++) {
+  for (m = 0; m < TableSize; m++) {
     if (MemoryTable[m] == 0) {
-      if (currentIndex == *TableSize) {
+      if (currentIndex == TableSize) {
         currentIndex = m;
       }
       currentCount++;
@@ -230,7 +230,7 @@ Memory FindBestFitIndex(Memory size) {
           bestFitCount = currentCount;
         }
       }
-      currentIndex = *TableSize;
+      currentIndex = TableSize;
       currentCount = 0;
     }
   }
@@ -388,7 +388,7 @@ void LongtermScheduler(void){
   ProcessControlBlock *currentProcess = DequeueProcess(JOBQUEUE);
 
   while (currentProcess) {
-    currentProcess->TopOfMemory = *TableSize; // initialize the top of memory
+    currentProcess->TopOfMemory = TableSize; // initialize the top of memory
 
     // map the correct page size to the process
     currentProcess->MemoryAllocated = (currentProcess->MemoryRequested / PAGESIZE) * PAGESIZE;
@@ -400,12 +400,12 @@ void LongtermScheduler(void){
     if (currentProcess->MemoryAllocated <= AvailableMemory) {
       // printf("About to find best fit!\n");
       currentProcess->TopOfMemory = FindBestFitIndex(currentProcess->MemoryAllocated);
-      if (currentProcess->TopOfMemory == *TableSize) {
+      if (currentProcess->TopOfMemory == TableSize) {
         printf("There is not a best fit!\n");
       }
     }
 
-    if (currentProcess->TopOfMemory != *TableSize) {
+    if (currentProcess->TopOfMemory != TableSize) {
       currentProcess->TimeInJobQueue = Now() - currentProcess->JobArrivalTime; // Set TimeInJobQueue
       currentProcess->JobStartTime = Now(); // Set JobStartTime
       EnqueueProcess(READYQUEUE,currentProcess); // Place process in Ready Queue
