@@ -211,7 +211,7 @@ ProcessControlBlock *SRTF() {
 Memory FindBestFitIndex(Memory size) {
   Memory innerSize = size / PAGESIZE;
   Memory m;
-  printf("table size - %u, inner size - %u,\n", TableSize, innerSize);
+  printf("table size - %u, inner size - %u,\n", *TableSize, innerSize);
   Memory bestFitIndex = *TableSize; // index of the table slot that is the best fit
   Memory currentIndex = *TableSize; // index of the current (first 0) table slot
   Memory bestFitCount = 0;
