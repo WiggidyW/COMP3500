@@ -211,6 +211,7 @@ Memory FindBestFitIndex(Memory size) {
   Memory innerSize = size / PAGESIZE;
   Memory m;
   Memory tableSize = sizeof (Memory) * (AvailableMemory / PAGESIZE);
+  printf("This is the table size! %u", tableSize);
   Memory bestFitIndex = tableSize; // index of the table slot that is the best fit
   Memory currentIndex = tableSize; // index of the current (first 0) table slot
   Memory bestFitCount = 0;
@@ -219,11 +220,13 @@ Memory FindBestFitIndex(Memory size) {
   for (m = 0; m < tableSize; m++) {
     if (MemoryTable[m] == 0) {
       if (currentIndex == tableSize) {
+        printf("Setting the index!\n");
         currentIndex = m;
       }
       currentCount++;
     }
     else {
+      printf("Ran into a 1! Count - %u - innersize - %u\n", currentCount, innerSize);
       if (currentCount > innerSize) {
         if (currentCount < bestFitCount || bestFitCount < innerSize) {
           bestFitIndex = currentIndex;
