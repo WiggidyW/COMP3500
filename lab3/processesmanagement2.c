@@ -224,7 +224,7 @@ Memory FindBestFitIndex(Memory size) {
       currentCount++;
     }
     else {
-      printf("current count - %u, current index - %u,\n", currentCount, currentIndex);
+      // printf("current count - %u, current index - %u,\n", currentCount, currentIndex);
       if (currentCount > innerSize) {
         if (currentCount < bestFitCount || bestFitCount < innerSize) {
           bestFitIndex = currentIndex;
