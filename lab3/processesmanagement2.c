@@ -315,8 +315,6 @@ void BookKeeping(void){
 \***********************************************************************/
 void LongtermScheduler(void){
   ProcessControlBlock *currentProcess = DequeueProcess(JOBQUEUE);
-  EnqueueProcess(JOBQUEUE,currentProcess);
-  currentProcess = DequeueProcess(JOBQUEUE);
   ProcessControlBlock *lastProcess = Queues[JOBQUEUE].Head; // tracks the final process in the queue
   while (currentProcess) {
     if (currentProcess->MemoryRequested <= AvailableMemory) {
@@ -329,7 +327,7 @@ void LongtermScheduler(void){
     else {
       EnqueueProcess(JOBQUEUE,currentProcess);
     }
-    if (currentProcess == lastProcess) { // short circuit after the final process
+    if (currentProcess->ProcessID == lastProcess->ProcessID) { // short circuit after the final process
       printf("Reached Final Process in LTS!\n");
       break;
     }
