@@ -314,8 +314,8 @@ void BookKeeping(void){
 *           then move Process from Job Queue to Ready Queue             *
 \***********************************************************************/
 void LongtermScheduler(void){
-  ProcessControlBlock *currentProcess = DequeueProcess(JOBQUEUE);
   ProcessControlBlock *lastProcess = Queues[JOBQUEUE].Head; // tracks the final process in the queue
+  ProcessControlBlock *currentProcess = DequeueProcess(JOBQUEUE);
   while (currentProcess) {
     if (currentProcess->MemoryRequested <= AvailableMemory) {
       currentProcess->TimeInJobQueue = Now() - currentProcess->JobArrivalTime; // Set TimeInJobQueue
