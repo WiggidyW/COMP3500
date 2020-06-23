@@ -100,8 +100,6 @@ void ManageProcesses(void){
     MemoryTable[m] = 0;
   }
   MemoryTable[*TableSize - 1] = 1; // assists our mapping
-
-  BookKeeping();
   
   while (1) {
     IO();
@@ -393,6 +391,8 @@ void BookKeeping(void){
 *           then move Process from Job Queue to Ready Queue             *
 \***********************************************************************/
 void LongtermScheduler(void){
+
+  BookKeeping();
   ProcessControlBlock *lastProcess = Queues[JOBQUEUE].Head; // tracks the final process in the queue
   ProcessControlBlock *currentProcess = DequeueProcess(JOBQUEUE);
 
