@@ -315,7 +315,7 @@ void BookKeeping(void){
 \***********************************************************************/
 void LongtermScheduler(void){
   ProcessControlBlock *currentProcess = DequeueProcess(JOBQUEUE);
-  ProcessControlBlock *first = currentProcess; // tracks the process that is initially dequeued
+  ProcessControlBlock *lastProcess = Queues[JOBQUEUE].Head; // tracks the final process in the queue
   while (currentProcess) {
     if (currentProcess->MemoryRequested <= AvailableMemory) {
       currentProcess->TimeInJobQueue = Now() - currentProcess->JobArrivalTime; // Set TimeInJobQueue
@@ -327,11 +327,10 @@ void LongtermScheduler(void){
     else {
       EnqueueProcess(JOBQUEUE,currentProcess);
     }
-    currentProcess = DequeueProcess(JOBQUEUE);
-    if (currentProcess == first) { // short circuit the 2nd time we see the first process
-      EnqueueProcess(JOBQUEUE,currentProcess);
+    if (currentProcess == lastProcess) { // short circuit after the final process
       break;
     }
+    currentProcess = DequeueProcess(JOBQUEUE);
   }
 }
 
