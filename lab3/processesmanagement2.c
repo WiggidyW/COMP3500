@@ -100,7 +100,6 @@ void ManageProcesses(void){
     MemoryTable[m] = 0;
   }
   MemoryTable[*TableSize - 1] = 1; // assists our mapping
-  BookKeeping();
   
   while (1) {
     IO();
@@ -207,12 +206,11 @@ ProcessControlBlock *SRTF() {
 }
 
 //
-// Finds the index of the best fit, or NULL if there is no fit
+// Finds the index of the best fit, or table size if there is no fit
 //
 Memory FindBestFitIndex(Memory size) {
   Memory innerSize = size / PAGESIZE;
   Memory m;
-  printf("table size - %u, inner size - %u,\n", *TableSize, innerSize);
   Memory bestFitIndex = *TableSize; // index of the table slot that is the best fit
   Memory currentIndex = *TableSize; // index of the current (first 0) table slot
   Memory bestFitCount = 0;
@@ -236,7 +234,12 @@ Memory FindBestFitIndex(Memory size) {
       currentCount = 0;
     }
   }
-  printf("best count - %u, best index - %u,\n", bestFitCount, bestFitIndex);
+  if (bestFitIndex != *TableSize) {
+    printf(
+      "page table size - %u, process page count - %u, index of allocated memory - %u,\n",
+      *TableSize, innerSize, bestFitIndex,
+    );
+  }
   return(bestFitIndex);
 }
 
@@ -348,8 +351,7 @@ void NewJobIn(ProcessControlBlock whichProcess){
 *     and CPU Utilization                                              *                                                     
 \***********************************************************************/
 void BookKeeping(void){
-  MemoryTable = (int *) NULL;
-  // free(MemoryTable);
+  MemoryTable = (int *) NULL; // fix corrupted size bug
   double end = Now(); // Total time for all processes to arrive
   Metric m;
 
@@ -390,7 +392,6 @@ void BookKeeping(void){
 void LongtermScheduler(void){
   ProcessControlBlock *lastProcess = Queues[JOBQUEUE].Head; // tracks the final process in the queue
   ProcessControlBlock *currentProcess = DequeueProcess(JOBQUEUE);
-  int seenLast = 0;
 
   while (currentProcess) {
     currentProcess->TopOfMemory = *TableSize; // initialize the top of memory for the process
@@ -420,10 +421,8 @@ void LongtermScheduler(void){
     if (currentProcess->ProcessID == lastProcess->ProcessID) { // short circuit after the final process
       break;
     }
-    if (currentProcess->ProcessID == 249) { seenLast = 1; } // fix corrupted size bug
     currentProcess = DequeueProcess(JOBQUEUE);
   }
-  if (seenLast == 1) { BookKeeping(); } // fix corrupted size bug
 }
 
 
