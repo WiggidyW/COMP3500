@@ -328,10 +328,12 @@ void LongtermScheduler(void){
       EnqueueProcess(JOBQUEUE,currentProcess);
     }
     if (currentProcess == lastProcess) { // short circuit after the final process
+      printf("Reached Final Process in LTS!\n");
       break;
     }
     currentProcess = DequeueProcess(JOBQUEUE);
   }
+  printf("Leaving LTS!\n");
 }
 
 
