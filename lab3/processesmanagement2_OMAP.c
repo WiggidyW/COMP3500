@@ -31,8 +31,6 @@ typedef enum {TAT,RT,CBT,THGT,WT,AWTJQ} Metric;
 
 #define MAXMETRICS      6 
 
-#define PAGESIZE        8192
-
 
 /*****************************************************************************\
 *                            Global data structures                           *
@@ -227,7 +225,7 @@ void Dispatcher() {
     SumMetrics[WT]      += processOnCPU->TimeInReadyQueue;
     SumMetrics[AWTJQ]   += processOnCPU->TimeInJobQueue;
 
-    AvailableMemory += processOnCPU->MemoryAllocated; // Return this memory to available
+    AvailableMemory += processOnCPU->MemoryRequested; // Return this memory to available
 
 
     // processOnCPU = DequeueProcess(EXITQUEUE);
@@ -319,19 +317,12 @@ void LongtermScheduler(void){
   ProcessControlBlock *lastProcess = Queues[JOBQUEUE].Head; // tracks the final process in the queue
   ProcessControlBlock *currentProcess = DequeueProcess(JOBQUEUE);
   while (currentProcess) {
-
-    // map the correct page size to the process
-    currentProcess->MemoryAllocated = (currentProcess->MemoryRequested / PAGESIZE) * PAGESIZE;
-    if (currentProcess->MemoryAllocated < currentProcess->MemoryRequested) {
-      currentProcess->MemoryAllocated += PAGESIZE; // if requested is greater than page size, or is not a multiple, fix it!
-    }
-
-    if (currentProcess->MemoryAllocated <= AvailableMemory) {
+    if (currentProcess->MemoryRequested <= AvailableMemory) {
       currentProcess->TimeInJobQueue = Now() - currentProcess->JobArrivalTime; // Set TimeInJobQueue
       currentProcess->JobStartTime = Now(); // Set JobStartTime
       EnqueueProcess(READYQUEUE,currentProcess); // Place process in Ready Queue
       currentProcess->state = READY; // Update process state
-      AvailableMemory -= currentProcess->MemoryAllocated; // reduce available memory
+      AvailableMemory -= currentProcess->MemoryRequested; // reduce available memory
     }
     else {
       EnqueueProcess(JOBQUEUE,currentProcess);
