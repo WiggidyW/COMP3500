@@ -47,6 +47,7 @@ Quantity NumberofJobs[MAXMETRICS]; // Number of Jobs for which metric was collec
 Average  SumMetrics[MAXMETRICS]; // Sum for each Metrics
 
 int* MemoryTable = NULL; // Table that holds the page slots
+Memory* TableSize = NULL; // Size of the memory table
 
 /*****************************************************************************\
 *                               Function prototypes                           *
@@ -91,13 +92,13 @@ void ManageProcesses(void){
   ManagementInitialization();
   
   // allocate the memory table!
-  Memory size = sizeof (Memory) * ((AvailableMemory / PAGESIZE) + 1);
   Memory m;
-  MemoryTable = malloc(size);
-  for (m = 0; m < size - 1; m++) {
+  TableSize = sizeof (Memory) * ((AvailableMemory / PAGESIZE) + 1);
+  MemoryTable = malloc(TableSize);
+  for (m = 0; m < TableSize - 1; m++) {
     MemoryTable[m] = 0;
   }
-  MemoryTable[size - 1] = 1; // assists our mapping
+  MemoryTable[TableSize - 1] = 1; // assists our mapping
   
   while (1) {
     IO();
@@ -207,36 +208,33 @@ ProcessControlBlock *SRTF() {
 // Finds the index of the best fit, or NULL if there is no fit
 //
 Memory FindBestFitIndex(Memory size) {
-  // printf("Finding it now...\n");
   Memory innerSize = size / PAGESIZE;
   Memory m;
-  Memory tableSize = sizeof (Memory) * ((AvailableMemory / PAGESIZE) + 1);
-  // printf("This is the table size! %u\n", tableSize);
-  Memory bestFitIndex = tableSize; // index of the table slot that is the best fit
-  Memory currentIndex = tableSize; // index of the current (first 0) table slot
+  printf("table size - %u, inner size - %u,\n", TableSize, innerSize);
+  Memory bestFitIndex = TableSize; // index of the table slot that is the best fit
+  Memory currentIndex = TableSize; // index of the current (first 0) table slot
   Memory bestFitCount = 0;
   Memory currentCount = 0;
-  // printf("Time to loop.\n");
-  for (m = 0; m < tableSize; m++) {
+  for (m = 0; m < TableSize; m++) {
     if (MemoryTable[m] == 0) {
-      if (currentIndex == tableSize) {
-        // printf("Setting the index!\n");
+      if (currentIndex == TableSize) {
         currentIndex = m;
       }
       currentCount++;
     }
     else {
-      // printf("Ran into a 1! Count - %u - innersize - %u\n", currentCount, innerSize);
+      printf("current count - %u, current index - %u,\n", currentCount, currentIndex);
       if (currentCount > innerSize) {
         if (currentCount < bestFitCount || bestFitCount < innerSize) {
           bestFitIndex = currentIndex;
           bestFitCount = currentCount;
         }
       }
-      currentIndex = tableSize;
+      currentIndex = TableSize;
       currentCount = 0;
     }
   }
+  printf("best count - %u, best index - %u,\n", bestFitCount, bestFitIndex);
   return(bestFitIndex);
 }
 
@@ -388,9 +386,9 @@ void BookKeeping(void){
 void LongtermScheduler(void){
   ProcessControlBlock *lastProcess = Queues[JOBQUEUE].Head; // tracks the final process in the queue
   ProcessControlBlock *currentProcess = DequeueProcess(JOBQUEUE);
-  Memory tableSize = sizeof (Memory) * ((AvailableMemory / PAGESIZE) + 1); // the size of the memory table
 
   while (currentProcess) {
+    currentProcess->TopOfMemory = TableSize; // initialize the top of memory
 
     // map the correct page size to the process
     currentProcess->MemoryAllocated = (currentProcess->MemoryRequested / PAGESIZE) * PAGESIZE;
@@ -402,17 +400,12 @@ void LongtermScheduler(void){
     if (currentProcess->MemoryAllocated <= AvailableMemory) {
       // printf("About to find best fit!\n");
       currentProcess->TopOfMemory = FindBestFitIndex(currentProcess->MemoryAllocated);
-      if (currentProcess->TopOfMemory == tableSize) {
+      if (currentProcess->TopOfMemory == TableSize) {
         printf("There is not a best fit!\n");
       }
     }
-    else {
-      currentProcess->TopOfMemory = tableSize;
-      printf("There is not enough memory!\n");
-    }
 
-    // printf("Checking if it exists!\n");
-    if (currentProcess->TopOfMemory != tableSize) {
+    if (currentProcess->TopOfMemory != TableSize) {
       currentProcess->TimeInJobQueue = Now() - currentProcess->JobArrivalTime; // Set TimeInJobQueue
       currentProcess->JobStartTime = Now(); // Set JobStartTime
       EnqueueProcess(READYQUEUE,currentProcess); // Place process in Ready Queue
