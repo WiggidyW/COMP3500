@@ -91,6 +91,7 @@ int main (int argc, char **argv) {
 
 void ManageProcesses(void){
   ManagementInitialization();
+  MemoryTable = malloc(AvailableMemory / PAGESIZE); // allocates the table dynamically
   while (1) {
     IO();
     CPUScheduler(PolicyNumber);
