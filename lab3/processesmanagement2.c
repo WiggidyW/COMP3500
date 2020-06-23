@@ -352,6 +352,7 @@ void NewJobIn(ProcessControlBlock whichProcess){
 \***********************************************************************/
 void BookKeeping(void){
   MemoryTable = (int *) NULL; // fix corrupted size bug
+  TableSize = (Memory *) NULL; // fix corrupted size bug
   double end = Now(); // Total time for all processes to arrive
   Metric m;
 
