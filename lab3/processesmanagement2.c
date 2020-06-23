@@ -400,7 +400,7 @@ void LongtermScheduler(void){
     // attempt to find a memory hole that will accomodate the process
     if (currentProcess->MemoryAllocated <= AvailableMemory) {
       printf("About to find best fit!\n");
-      currentProcess->TopOfMemory = *&FindBestFitIndex(currentProcess->MemoryAllocated);
+      currentProcess->TopOfMemory = FindBestFitIndex(currentProcess->MemoryAllocated);
     }
 
     printf("Checking if it exists!\n");
