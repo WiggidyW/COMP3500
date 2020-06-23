@@ -100,6 +100,8 @@ void ManageProcesses(void){
     MemoryTable[m] = 0;
   }
   MemoryTable[*TableSize - 1] = 1; // assists our mapping
+
+  BookKeeping();
   
   while (1) {
     IO();
