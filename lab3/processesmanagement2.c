@@ -100,10 +100,6 @@ void ManageProcesses(void){
     MemoryTable[m] = 0;
   }
   MemoryTable[*TableSize - 1] = 1; // assists our mapping
-  TableSize = (Memory *) NULL;
-  MemoryTable = (int *) NULL;
-  free(TableSize);
-  free(MemoryTable);
   BookKeeping();
   
   while (1) {
@@ -352,8 +348,10 @@ void NewJobIn(ProcessControlBlock whichProcess){
 *     and CPU Utilization                                              *                                                     
 \***********************************************************************/
 void BookKeeping(void){
-  free(MemoryTable);
+  TableSize = (Memory *) NULL;
+  MemoryTable = (int *) NULL;
   free(TableSize);
+  free(MemoryTable);
   double end = Now(); // Total time for all processes to arrive
   Metric m;
 
