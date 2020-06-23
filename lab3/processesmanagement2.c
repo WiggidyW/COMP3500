@@ -348,9 +348,9 @@ void NewJobIn(ProcessControlBlock whichProcess){
 *     and CPU Utilization                                              *                                                     
 \***********************************************************************/
 void BookKeeping(void){
-  TableSize = (Memory *) NULL;
+  // TableSize = (Memory *) NULL;
   MemoryTable = (int *) NULL;
-  free(TableSize);
+  // free(TableSize);
   free(MemoryTable);
   double end = Now(); // Total time for all processes to arrive
   Metric m;
