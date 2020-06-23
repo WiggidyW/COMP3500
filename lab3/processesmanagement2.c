@@ -429,7 +429,7 @@ void LongtermScheduler(void){
     if (currentProcess->ProcessID == 249) { SeenLast = 1; } // fix corrupted size bug
     currentProcess = DequeueProcess(JOBQUEUE);
   }
-  if (SeenLast = 1) { // fix corrupted size bug
+  if (SeenLast == 1) { // fix corrupted size bug
     MemoryTable = (int *) NULL; // fix corrupted size bug
     TableSize = (Memory *) NULL; // fix corrupted size bug
   }
