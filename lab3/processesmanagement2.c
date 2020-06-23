@@ -77,6 +77,17 @@ void                 Dispatcher();
 \*****************************************************************************/
 
 int main (int argc, char **argv) {
+  
+  // allocate the memory table!
+  Memory m;
+  Memory tableSize = sizeof (Memory) * ((AvailableMemory / PAGESIZE) + 1);
+  TableSize = &tableSize;
+  MemoryTable = malloc(*TableSize);
+  for (m = 0; m < *TableSize - 1; m++) {
+    MemoryTable[m] = 0;
+  }
+  MemoryTable[*TableSize - 1] = 1; // assists our mapping
+  
    if (Initialization(argc,argv)){
      ManageProcesses();
    }
@@ -90,17 +101,6 @@ int main (int argc, char **argv) {
 
 void ManageProcesses(void){
   ManagementInitialization();
-  
-  // allocate the memory table!
-  Memory m;
-  Memory tableSize = sizeof (Memory) * ((AvailableMemory / PAGESIZE) + 1);
-  TableSize = &tableSize;
-  MemoryTable = malloc(*TableSize);
-  for (m = 0; m < *TableSize - 1; m++) {
-    MemoryTable[m] = 0;
-  }
-  MemoryTable[*TableSize - 1] = 1; // assists our mapping
-  
   while (1) {
     IO();
     CPUScheduler(PolicyNumber);
@@ -389,7 +389,7 @@ void LongtermScheduler(void){
   ProcessControlBlock *currentProcess = DequeueProcess(JOBQUEUE);
 
   while (currentProcess) {
-    currentProcess->TopOfMemory = *TableSize; // initialize the top of memory
+    currentProcess->TopOfMemory = *TableSize; // initialize the top of memory for the process
 
     // map the correct page size to the process
     currentProcess->MemoryAllocated = (currentProcess->MemoryRequested / PAGESIZE) * PAGESIZE;
