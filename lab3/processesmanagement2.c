@@ -31,7 +31,7 @@ typedef enum {TAT,RT,CBT,THGT,WT,AWTJQ} Metric;
 
 #define MAXMETRICS      6 
 
-#define PAGESIZE        8192
+#define PAGESIZE     8192
 
 
 /*****************************************************************************\
@@ -47,6 +47,8 @@ typedef enum {TAT,RT,CBT,THGT,WT,AWTJQ} Metric;
 
 Quantity NumberofJobs[MAXMETRICS]; // Number of Jobs for which metric was collected
 Average  SumMetrics[MAXMETRICS]; // Sum for each Metrics
+
+// Memory   MemoryTable[AvailableMemory / PAGESIZE]; // Table of available memory holes
 
 /*****************************************************************************\
 *                               Function prototypes                           *
@@ -318,6 +320,9 @@ void BookKeeping(void){
 void LongtermScheduler(void){
   ProcessControlBlock *lastProcess = Queues[JOBQUEUE].Head; // tracks the final process in the queue
   ProcessControlBlock *currentProcess = DequeueProcess(JOBQUEUE);
+
+  printf("%u", currentProcess->TopOfMemory);
+
   while (currentProcess) {
 
     // map the correct page size to the process
