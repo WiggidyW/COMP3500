@@ -90,6 +90,7 @@ int main (int argc, char **argv) {
 
 void ManageProcesses(void){
   ManagementInitialization();
+  BookKeeping();
   
   // allocate the memory table!
   Memory m;
