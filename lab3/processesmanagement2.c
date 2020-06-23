@@ -207,6 +207,7 @@ ProcessControlBlock *SRTF() {
 // Finds the index of the best fit, or NULL if there is no fit
 //
 Memory FindBestFitIndex(Memory size) {
+  printf("Finding it now...\n");
   Memory innerSize = size / PAGESIZE;
   Memory m;
   Memory tableSize = sizeof (Memory) * (AvailableMemory / PAGESIZE);
@@ -214,6 +215,7 @@ Memory FindBestFitIndex(Memory size) {
   Memory currentIndex = tableSize; // index of the current (first 0) table slot
   Memory bestFitCount = 0;
   Memory currentCount = 0;
+  printf("Time to loop.\n");
   for (m = 0; m < tableSize; m++) {
     if (MemoryTable[m] == 0) {
       if (currentIndex == tableSize) {
@@ -232,10 +234,13 @@ Memory FindBestFitIndex(Memory size) {
       currentCount = 0;
     }
   }
+  printf("Checking if it's invalid...\n");
   if (bestFitIndex == tableSize) {
+    printf("It's invalid!\n");
     bestFitIndex = *(Memory *) NULL;
   }
   else {
+    printf("It's good!\n");
     return bestFitIndex;
   }
 }
