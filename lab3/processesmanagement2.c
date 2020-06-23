@@ -18,7 +18,7 @@
 *                             Global data types                               *
 \*****************************************************************************/
 
-typedef enum {TAT,RT,CBT,THGT,WT} Metric;
+typedef enum {TAT,RT,CBT,THGT,WT,AWTJQ} Metric;
 
 
 /*****************************************************************************\
@@ -29,8 +29,7 @@ typedef enum {TAT,RT,CBT,THGT,WT} Metric;
 #define RR              3 
 
 
-#define MAXMETRICS      5 
-
+#define MAXMETRICS      6 
 
 
 /*****************************************************************************\
@@ -221,8 +220,10 @@ void Dispatcher() {
     NumberofJobs[TAT]++;
     NumberofJobs[WT]++;
     NumberofJobs[CBT]++;
+    NumberofJobs[AWTJQ]++;
     SumMetrics[TAT]     += Now() - processOnCPU->JobArrivalTime;
     SumMetrics[WT]      += processOnCPU->TimeInReadyQueue;
+    SumMetrics[AWTJQ]   += processOnCPU->TimeInJobQueue;
 
 
     // processOnCPU = DequeueProcess(EXITQUEUE);
@@ -289,12 +290,16 @@ void BookKeeping(void){
     SumMetrics[WT] = SumMetrics[WT]/ (Average) NumberofJobs[WT];
   }
 
+  if (NumberofJobs[AWTJQ] > 0){
+    SumMetrics[AWTJQ] = SumMetrics[AWTJQ]/ (Average) NumberofJobs[AWTJQ];
+  }
+
   printf("\n********* Processes Managemenent Numbers ******************************\n");
   printf("Policy Number = %d, Quantum = %.6f   Show = %d\n", PolicyNumber, Quantum, Show);
   printf("Number of Completed Processes = %d\n", NumberofJobs[THGT]);
-  printf("ATAT=%f   ART=%f  CBT = %f  T=%f AWT=%f\n", 
+  printf("ATAT=%f   ART=%f  CBT = %f  T=%f AWT=%f  AWTJQ=%f\n", 
 	 SumMetrics[TAT], SumMetrics[RT], SumMetrics[CBT], 
-	 NumberofJobs[THGT]/Now(), SumMetrics[WT]);
+	 NumberofJobs[THGT]/Now(), SumMetrics[WT], SumMetrics[AWTJQ]);
 
   exit(0);
 }
