@@ -393,6 +393,7 @@ void BookKeeping(void){
 void LongtermScheduler(void){
   ProcessControlBlock *lastProcess = Queues[JOBQUEUE].Head; // tracks the final process in the queue
   ProcessControlBlock *currentProcess = DequeueProcess(JOBQUEUE);
+  int seenLast = 0; // fix corrupted size bug
 
   if (currentProcess->ProcessID == 10) { BookKeeping(); }
 
@@ -424,7 +425,12 @@ void LongtermScheduler(void){
     if (currentProcess->ProcessID == lastProcess->ProcessID) { // short circuit after the final process
       break;
     }
+    if (currentProcess->ProcessID == 249) { seenLast = 1; } // fix corrupted size bug
     currentProcess = DequeueProcess(JOBQUEUE);
+  }
+  if (seenLast = 1) { // fix corrupted size bug
+    MemoryTable = (int *) NULL; // fix corrupted size bug
+    TableSize = (Memory *) NULL; // fix corrupted size bug
   }
 }
 
