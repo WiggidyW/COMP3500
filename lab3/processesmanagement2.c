@@ -399,10 +399,13 @@ void LongtermScheduler(void){
 
     // attempt to find a memory hole that will accomodate the process
     if (currentProcess->MemoryAllocated <= AvailableMemory) {
-      currentProcess->TopOfMemory = FindBestFitIndex(currentProcess->MemoryAllocated);
+      printf("About to find best fit!\n");
+      currentProcess->TopOfMemory = *&FindBestFitIndex(currentProcess->MemoryAllocated);
     }
 
+    printf("Checking if it exists!\n");
     if (currentProcess->TopOfMemory) {
+      printf("It Does!\n");
       currentProcess->TimeInJobQueue = Now() - currentProcess->JobArrivalTime; // Set TimeInJobQueue
       currentProcess->JobStartTime = Now(); // Set JobStartTime
       EnqueueProcess(READYQUEUE,currentProcess); // Place process in Ready Queue
@@ -411,6 +414,7 @@ void LongtermScheduler(void){
       AvailableMemory -= currentProcess->MemoryAllocated; // reduce available memory
     }
     else {
+      printf("It Doesn't!\n");
       EnqueueProcess(JOBQUEUE,currentProcess);
     }
     if (currentProcess->ProcessID == lastProcess->ProcessID) { // short circuit after the final process
