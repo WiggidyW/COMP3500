@@ -225,6 +225,8 @@ void Dispatcher() {
     SumMetrics[WT]      += processOnCPU->TimeInReadyQueue;
     SumMetrics[AWTJQ]   += processOnCPU->TimeInJobQueue;
 
+    AvailableMemory += processOnCPU->MemoryRequested; // Return this memory to available
+
 
     // processOnCPU = DequeueProcess(EXITQUEUE);
     // XXX free(processOnCPU);
@@ -314,10 +316,15 @@ void BookKeeping(void){
 void LongtermScheduler(void){
   ProcessControlBlock *currentProcess = DequeueProcess(JOBQUEUE);
   while (currentProcess) {
-    currentProcess->TimeInJobQueue = Now() - currentProcess->JobArrivalTime; // Set TimeInJobQueue
-    currentProcess->JobStartTime = Now(); // Set JobStartTime
-    EnqueueProcess(READYQUEUE,currentProcess); // Place process in Ready Queue
-    currentProcess->state = READY; // Update process state
+    if (currentProcess->MemoryRequested <= AvailableMemory) {
+      currentProcess->TimeInJobQueue = Now() - currentProcess->JobArrivalTime; // Set TimeInJobQueue
+      currentProcess->JobStartTime = Now(); // Set JobStartTime
+      EnqueueProcess(READYQUEUE,currentProcess); // Place process in Ready Queue
+      currentProcess->state = READY; // Update process state
+    }
+    else {
+      EnqueueProcess(JOBQUEUE,currentProcess);
+    }
     currentProcess = DequeueProcess(JOBQUEUE);
   }
 }
