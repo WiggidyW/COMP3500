@@ -394,7 +394,7 @@ Memory FindBestFit(Memory size) {
     }
   }
   if (bestFitIndex == tableSize) {
-    bestFitIndex = NULL;
+    bestFitIndex = *(Memory *) NULL;
   }
   else {
     return bestFitIndex;
