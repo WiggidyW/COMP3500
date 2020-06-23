@@ -93,7 +93,8 @@ void ManageProcesses(void){
   
   // allocate the memory table!
   Memory m;
-  TableSize = &sizeof (Memory) * ((AvailableMemory / PAGESIZE) + 1);
+  Memory tableSize = sizeof (Memory) * ((AvailableMemory / PAGESIZE) + 1);
+  TableSize = &tableSize;
   MemoryTable = malloc(*TableSize);
   for (m = 0; m < *TableSize - 1; m++) {
     MemoryTable[m] = 0;
