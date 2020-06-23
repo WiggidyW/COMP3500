@@ -400,11 +400,7 @@ void LongtermScheduler(void){
 
     // attempt to find a memory hole that will accomodate the process
     if (currentProcess->MemoryAllocated <= AvailableMemory) {
-      // printf("About to find best fit!\n");
       currentProcess->TopOfMemory = FindBestFitIndex(currentProcess->MemoryAllocated);
-      if (currentProcess->TopOfMemory == *TableSize) {
-        printf("There is not a best fit!\n");
-      }
     }
 
     if (currentProcess->TopOfMemory != *TableSize) {
@@ -424,7 +420,7 @@ void LongtermScheduler(void){
     if (currentProcess->ProcessID == 249) { seenLast = 1; } // fix corrupted size bug
     currentProcess = DequeueProcess(JOBQUEUE);
   }
-  if (seenLast == 1) { MemoryTable = NULL; } // fix corrupted size bug
+  if (seenLast == 1) { BookKeeping(); } // fix corrupted size bug
 }
 
 
