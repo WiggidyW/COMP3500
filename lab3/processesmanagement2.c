@@ -383,8 +383,8 @@ Memory FindBestFit(Memory size) {
       currentCount++;
     }
     else {
-      if (currentCount > slotsNeeded) {
-        if (currentCount < bestFitCount || bestFitCount < slotsNeeded) {
+      if (currentCount > innerSize) {
+        if (currentCount < bestFitCount || bestFitCount < innerSize) {
           bestFitIndex = currentIndex;
           bestFitCount = currentCount;
         }
