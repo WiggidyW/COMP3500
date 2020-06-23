@@ -319,6 +319,56 @@ void BookKeeping(void){
   exit(0);
 }
 
+Memory FindBestFitIndex(Memory size) {
+  Memory innerSize = size / PAGESIZE;
+  Memory m;
+  Memory tableSize = sizeof (Memory) * (AvailableMemory / PAGESIZE);
+  Memory bestFitIndex = tableSize; // index of the table slot that is the best fit
+  Memory currentIndex = tableSize; // index of the current (first 0) table slot
+  Memory bestFitCount = 0;
+  Memory currentCount = 0;
+  for (m = 0; m < tableSize; m++) {
+    if (MemoryTable[m] == 0) {
+      if (currentIndex == tableSize) {
+        currentIndex = m;
+      }
+      currentCount++;
+    }
+    else {
+      if (currentCount > innerSize) {
+        if (currentCount < bestFitCount || bestFitCount < innerSize) {
+          bestFitIndex = currentIndex;
+          bestFitCount = currentCount;
+        }
+      }
+      currentIndex = tableSize;
+      currentCount = 0;
+    }
+  }
+  if (bestFitIndex == tableSize) {
+    bestFitIndex = *(Memory *) NULL;
+  }
+  else {
+    return bestFitIndex;
+  }
+}
+
+void AllocateMemory(Memory index, Memory size) {
+  Memory innerSize = size / PAGESIZE;
+  Memory m;
+  for (m = index; m < index + innerSize; m++) {
+    MemoryTable[m] = 1;
+  }
+}
+
+void DeAllocateMemory(Memory index, Memory size) {
+  Memory innerSize = size / PAGESIZE;
+  Memory m;
+  for (m = index; m < index + innerSize; m++) {
+    MemoryTable[m] = 0;
+  }
+}
+
 /***********************************************************************\
 * Input : None                                                          *
 * Output: None                                                          *
@@ -373,54 +423,4 @@ Flag ManagementInitialization(void){
      SumMetrics[m]   = 0.0;
   }
   return TRUE;
-}
-
-Memory FindBestFitIndex(Memory size) {
-  Memory innerSize = size / PAGESIZE;
-  Memory m;
-  Memory tableSize = sizeof (Memory) * (AvailableMemory / PAGESIZE);
-  Memory bestFitIndex = tableSize; // index of the table slot that is the best fit
-  Memory currentIndex = tableSize; // index of the current (first 0) table slot
-  Memory bestFitCount = 0;
-  Memory currentCount = 0;
-  for (m = 0; m < tableSize; m++) {
-    if (MemoryTable[m] == 0) {
-      if (currentIndex == tableSize) {
-        currentIndex = m;
-      }
-      currentCount++;
-    }
-    else {
-      if (currentCount > innerSize) {
-        if (currentCount < bestFitCount || bestFitCount < innerSize) {
-          bestFitIndex = currentIndex;
-          bestFitCount = currentCount;
-        }
-      }
-      currentIndex = tableSize;
-      currentCount = 0;
-    }
-  }
-  if (bestFitIndex == tableSize) {
-    bestFitIndex = *(Memory *) NULL;
-  }
-  else {
-    return bestFitIndex;
-  }
-}
-
-void AllocateMemory(Memory index, Memory size) {
-  Memory innerSize = size / PAGESIZE;
-  Memory m;
-  for (m = index; m < index + innerSize; m++) {
-    MemoryTable[m] = 1;
-  }
-}
-
-void DeAllocateMemory(Memory index, Memory size) {
-  Memory innerSize = size / PAGESIZE;
-  Memory m;
-  for (m = index; m < index + innerSize; m++) {
-    MemoryTable[m] = 0;
-  }
 }
