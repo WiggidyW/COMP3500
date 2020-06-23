@@ -20,7 +20,7 @@
 
 typedef enum {TAT,RT,CBT,THGT,WT,AWTJQ} Metric;
 
-typedef enum {TRUE,FALSE} Boolean;
+typedef enum {T,F} Boolean;
 
 /*****************************************************************************\
 *                             Global definitions                              *
