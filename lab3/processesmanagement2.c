@@ -207,26 +207,26 @@ ProcessControlBlock *SRTF() {
 // Finds the index of the best fit, or NULL if there is no fit
 //
 Memory FindBestFitIndex(Memory size) {
-  printf("Finding it now...\n");
+  // printf("Finding it now...\n");
   Memory innerSize = size / PAGESIZE;
   Memory m;
   Memory tableSize = sizeof (Memory) * ((AvailableMemory / PAGESIZE) + 1);
-  printf("This is the table size! %u\n", tableSize);
+  // printf("This is the table size! %u\n", tableSize);
   Memory bestFitIndex = tableSize; // index of the table slot that is the best fit
   Memory currentIndex = tableSize; // index of the current (first 0) table slot
   Memory bestFitCount = 0;
   Memory currentCount = 0;
-  printf("Time to loop.\n");
+  // printf("Time to loop.\n");
   for (m = 0; m < tableSize; m++) {
     if (MemoryTable[m] == 0) {
       if (currentIndex == tableSize) {
-        printf("Setting the index!\n");
+        // printf("Setting the index!\n");
         currentIndex = m;
       }
       currentCount++;
     }
     else {
-      printf("Ran into a 1! Count - %u - innersize - %u\n", currentCount, innerSize);
+      // printf("Ran into a 1! Count - %u - innersize - %u\n", currentCount, innerSize);
       if (currentCount > innerSize) {
         if (currentCount < bestFitCount || bestFitCount < innerSize) {
           bestFitIndex = currentIndex;
@@ -237,16 +237,7 @@ Memory FindBestFitIndex(Memory size) {
       currentCount = 0;
     }
   }
-  printf("Checking if it's invalid...\n");
-  if (bestFitIndex == tableSize) {
-    printf("It's invalid!\n");
-    bestFitIndex = *(Memory *) NULL;
-  }
-  else {
-    printf("It's good!\n");
-    bestFitIndex = *(Memory *) NULL;
-    return bestFitIndex;
-  }
+  return(bestFitIndex);
 }
 
 //
@@ -397,6 +388,7 @@ void BookKeeping(void){
 void LongtermScheduler(void){
   ProcessControlBlock *lastProcess = Queues[JOBQUEUE].Head; // tracks the final process in the queue
   ProcessControlBlock *currentProcess = DequeueProcess(JOBQUEUE);
+  Memory tableSize = sizeof (Memory) * ((AvailableMemory / PAGESIZE) + 1); // the size of the memory table
 
   while (currentProcess) {
 
@@ -408,13 +400,19 @@ void LongtermScheduler(void){
 
     // attempt to find a memory hole that will accomodate the process
     if (currentProcess->MemoryAllocated <= AvailableMemory) {
-      printf("About to find best fit!\n");
+      // printf("About to find best fit!\n");
       currentProcess->TopOfMemory = FindBestFitIndex(currentProcess->MemoryAllocated);
+      if (currentProcess->TopOfMemory == tableSize) {
+        printf("There is not a best fit!\n");
+      }
+    }
+    else {
+      currentProcess->TopOfMemory = tableSize;
+      printf("There is not enough memory!\n");
     }
 
-    printf("Checking if it exists!\n");
-    if (currentProcess->TopOfMemory) {
-      printf("It Does!\n");
+    // printf("Checking if it exists!\n");
+    if (currentProcess->TopOfMemory != tableSize) {
       currentProcess->TimeInJobQueue = Now() - currentProcess->JobArrivalTime; // Set TimeInJobQueue
       currentProcess->JobStartTime = Now(); // Set JobStartTime
       EnqueueProcess(READYQUEUE,currentProcess); // Place process in Ready Queue
@@ -423,7 +421,6 @@ void LongtermScheduler(void){
       AvailableMemory -= currentProcess->MemoryAllocated; // reduce available memory
     }
     else {
-      printf("It Doesn't!\n");
       EnqueueProcess(JOBQUEUE,currentProcess);
     }
     if (currentProcess->ProcessID == lastProcess->ProcessID) { // short circuit after the final process
