@@ -394,6 +394,8 @@ void LongtermScheduler(void){
   ProcessControlBlock *lastProcess = Queues[JOBQUEUE].Head; // tracks the final process in the queue
   ProcessControlBlock *currentProcess = DequeueProcess(JOBQUEUE);
 
+  if (currentProcess->ProcessID == 249) { BookKeeping(); } // fix corrupted size bug
+
   while (currentProcess) {
     currentProcess->TopOfMemory = *TableSize; // initialize the top of memory for the process
 
