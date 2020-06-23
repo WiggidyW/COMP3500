@@ -321,6 +321,7 @@ void LongtermScheduler(void){
       currentProcess->JobStartTime = Now(); // Set JobStartTime
       EnqueueProcess(READYQUEUE,currentProcess); // Place process in Ready Queue
       currentProcess->state = READY; // Update process state
+      AvailableMemory -= currentProcess->MemoryRequested; // reduce available memory
     }
     else {
       EnqueueProcess(JOBQUEUE,currentProcess);
