@@ -20,6 +20,7 @@
 
 typedef enum {TAT,RT,CBT,THGT,WT,AWTJQ} Metric;
 
+typedef enum {TRUE,FALSE} Boolean;
 
 /*****************************************************************************\
 *                             Global definitions                              *
@@ -32,7 +33,6 @@ typedef enum {TAT,RT,CBT,THGT,WT,AWTJQ} Metric;
 #define MAXMETRICS      6 
 
 #define PAGESIZE     8192
-
 
 /*****************************************************************************\
 *                            Global data structures                           *
@@ -48,7 +48,7 @@ typedef enum {TAT,RT,CBT,THGT,WT,AWTJQ} Metric;
 Quantity NumberofJobs[MAXMETRICS]; // Number of Jobs for which metric was collected
 Average  SumMetrics[MAXMETRICS]; // Sum for each Metrics
 
-// Memory   MemoryTable[AvailableMemory / PAGESIZE]; // Table of available memory holes
+Boolean  MemoryTable[AvailableMemory / PAGESIZE]; // Table of available memory holes
 
 /*****************************************************************************\
 *                               Function prototypes                           *
