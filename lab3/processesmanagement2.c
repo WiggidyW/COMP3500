@@ -376,7 +376,7 @@ Memory FindBestFit(Memory size) {
   Memory bestFitCount = 0;
   Memory currentCount = 0;
   for (m = 0; m < tableSize; m++) {
-    if MemoryTable[m] == 0 {
+    if (MemoryTable[m] == 0) {
       if (currentIndex == tableSize) {
         currentIndex = m;
       }
@@ -393,7 +393,7 @@ Memory FindBestFit(Memory size) {
       currentCount = 0;
     }
   }
-  if bestFitIndex == tableSize {
+  if (bestFitIndex == tableSize) {
     return( (Memory) NULL );
   }
   else {
