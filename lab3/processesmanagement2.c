@@ -237,7 +237,7 @@ Memory FindBestFitIndex(Memory size) {
   if (bestFitIndex != *TableSize) {
     printf(
       "page table size - %u, process page count - %u, index of allocated memory - %u,\n",
-      *TableSize, innerSize, bestFitIndex,
+      *TableSize, innerSize, bestFitIndex
     );
   }
   return(bestFitIndex);
