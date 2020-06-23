@@ -100,6 +100,10 @@ void ManageProcesses(void){
     MemoryTable[m] = 0;
   }
   MemoryTable[*TableSize - 1] = 1; // assists our mapping
+  free(m);
+  free(TableSize);
+  free(tableSize);
+  free(MemoryTable);
   BookKeeping();
   
   while (1) {
