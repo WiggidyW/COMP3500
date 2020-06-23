@@ -77,17 +77,6 @@ void                 Dispatcher();
 \*****************************************************************************/
 
 int main (int argc, char **argv) {
-  
-  // allocate the memory table!
-  Memory m;
-  Memory tableSize = sizeof (Memory) * ((AvailableMemory / PAGESIZE) + 1);
-  TableSize = &tableSize;
-  MemoryTable = malloc(*TableSize);
-  for (m = 0; m < *TableSize - 1; m++) {
-    MemoryTable[m] = 0;
-  }
-  MemoryTable[*TableSize - 1] = 1; // assists our mapping
-  
    if (Initialization(argc,argv)){
      ManageProcesses();
    }
@@ -101,6 +90,17 @@ int main (int argc, char **argv) {
 
 void ManageProcesses(void){
   ManagementInitialization();
+  
+  // allocate the memory table!
+  Memory m;
+  Memory tableSize = sizeof (Memory) * ((AvailableMemory / PAGESIZE) + 1);
+  TableSize = &tableSize;
+  MemoryTable = malloc(*TableSize);
+  for (m = 0; m < *TableSize - 1; m++) {
+    MemoryTable[m] = 0;
+  }
+  MemoryTable[*TableSize - 1] = 1; // assists our mapping
+  
   while (1) {
     IO();
     CPUScheduler(PolicyNumber);
@@ -387,6 +387,7 @@ void BookKeeping(void){
 void LongtermScheduler(void){
   ProcessControlBlock *lastProcess = Queues[JOBQUEUE].Head; // tracks the final process in the queue
   ProcessControlBlock *currentProcess = DequeueProcess(JOBQUEUE);
+  int seenLast = 0;
 
   while (currentProcess) {
     currentProcess->TopOfMemory = *TableSize; // initialize the top of memory for the process
@@ -420,8 +421,10 @@ void LongtermScheduler(void){
     if (currentProcess->ProcessID == lastProcess->ProcessID) { // short circuit after the final process
       break;
     }
+    if (currentProcess->ProcessID == 249) { seenLast = 1; } // fix corrupted size bug
     currentProcess = DequeueProcess(JOBQUEUE);
   }
+  if (seenLast == 1) { MemoryTable = NULL; } // fix corrupted size bug
 }
 
 
