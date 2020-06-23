@@ -91,11 +91,11 @@ void ManageProcesses(void){
   ManagementInitialization();
   
   // allocate the memory table!
-  int size = sizeof (int) * (AvailableMemory / PAGESIZE);
-  int i;
-  MemoryTable = malloc(sizeof (int) * (AvailableMemory / PAGESIZE));
-  for (i = 0; i < size; i++) {
-    MemoryTable[i] = 0;
+  Memory size = sizeof (Memory) * (AvailableMemory / PAGESIZE);
+  Memory m;
+  MemoryTable = malloc(size);
+  for (m = 0; m < size; m++) {
+    MemoryTable[m] = 0;
   }
   
   while (1) {
@@ -327,11 +327,6 @@ void BookKeeping(void){
 void LongtermScheduler(void){
   ProcessControlBlock *lastProcess = Queues[JOBQUEUE].Head; // tracks the final process in the queue
   ProcessControlBlock *currentProcess = DequeueProcess(JOBQUEUE);
-  Memory slotsNeeded; // number of table slots the process needs
-  Memory bestFitIndex; // index of the table slot that is the best fit
-  Memory bestFitCount; // number of pages that slot can accomodate
-
-  printf("%u", currentProcess->TopOfMemory);
 
   while (currentProcess) {
 
@@ -342,13 +337,6 @@ void LongtermScheduler(void){
     }
 
     if (currentProcess->MemoryAllocated <= AvailableMemory) {
-
-      // slotsNeeded = currentProcess->MemoryAllocated / PAGESIZE;
-      // int i;
-      // for (i = 0; i < AvailableMemory / PAGESIZE; i++) {
-
-      // }
-
       currentProcess->TimeInJobQueue = Now() - currentProcess->JobArrivalTime; // Set TimeInJobQueue
       currentProcess->JobStartTime = Now(); // Set JobStartTime
       EnqueueProcess(READYQUEUE,currentProcess); // Place process in Ready Queue
@@ -377,4 +365,54 @@ Flag ManagementInitialization(void){
      SumMetrics[m]   = 0.0;
   }
   return TRUE;
+}
+
+Memory FindBestFit(Memory size) {
+  Memory innerSize = size / PAGESIZE;
+  Memory m;
+  Memory tableSize = sizeof (Memory) * (AvailableMemory / PAGESIZE);
+  Memory bestFitIndex = tableSize; // index of the table slot that is the best fit
+  Memory currentIndex = tableSize; // index of the current (first 0) table slot
+  Memory bestFitCount = 0;
+  Memory currentCount = 0;
+  for (m = 0; m < tableSize; m++) {
+    if MemoryTable[m] == 0 {
+      if (currentIndex == tableSize) {
+        currentIndex = m;
+      }
+      currentCount++;
+    }
+    else {
+      if (currentCount > slotsNeeded) {
+        if (currentCount < bestFitCount || bestFitCount < slotsNeeded) {
+          bestFitIndex = currentIndex;
+          bestFitCount = currentCount;
+        }
+      }
+      currentIndex = tableSize;
+      currentCount = 0;
+    }
+  }
+  if bestFitIndex == tableSize {
+    return( (Memory) NULL );
+  }
+  else {
+    return bestFitIndex;
+  }
+}
+
+void AllocateMemory(Memory index, Memory size) {
+  Memory innerSize = size / PAGESIZE;
+  Memory m;
+  for (m = index; m < index + innerSize; m++) {
+    MemoryTable[m] = 1;
+  }
+}
+
+void DeAllocateMemory(Memory index, Memory size) {
+  Memory innerSize = size / PAGESIZE;
+  Memory m;
+  for (m = index; m < index + innerSize; m++) {
+    MemoryTable[m] = 0;
+  }
 }
