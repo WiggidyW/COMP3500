@@ -91,12 +91,13 @@ void ManageProcesses(void){
   ManagementInitialization();
   
   // allocate the memory table!
-  Memory size = sizeof (Memory) * (AvailableMemory / PAGESIZE);
+  Memory size = sizeof (Memory) * ((AvailableMemory / PAGESIZE) + 1);
   Memory m;
   MemoryTable = malloc(size);
-  for (m = 0; m < size; m++) {
+  for (m = 0; m < size - 1; m++) {
     MemoryTable[m] = 0;
   }
+  MemoryTable[size - 1] = 1; // assists our mapping
   
   while (1) {
     IO();
@@ -236,6 +237,7 @@ void Dispatcher() {
     SumMetrics[WT]      += processOnCPU->TimeInReadyQueue;
     SumMetrics[AWTJQ]   += processOnCPU->TimeInJobQueue;
 
+    DeAllocateMemory(processOnCPU->TopOfMemory, processOnCPU->MemoryAllocated); // deallocate the processes memory for future use
     AvailableMemory += processOnCPU->MemoryAllocated; // Return this memory to available
 
 
@@ -336,11 +338,17 @@ void LongtermScheduler(void){
       currentProcess->MemoryAllocated += PAGESIZE; // if requested is greater than page size, or is not a multiple, fix it!
     }
 
+    // attempt to find a memory hole that will accomodate the process
     if (currentProcess->MemoryAllocated <= AvailableMemory) {
+      currentProcess->TopOfMemory = FindBestFitIndex(currentProcess->MemoryAllocated);
+    }
+
+    if (currentProcess->TopOfMemory) {
       currentProcess->TimeInJobQueue = Now() - currentProcess->JobArrivalTime; // Set TimeInJobQueue
       currentProcess->JobStartTime = Now(); // Set JobStartTime
       EnqueueProcess(READYQUEUE,currentProcess); // Place process in Ready Queue
       currentProcess->state = READY; // Update process state
+      AllocateMemory(currentProcess->TopOfMemory, currentProcess->MemoryAllocated); // allocate the memory
       AvailableMemory -= currentProcess->MemoryAllocated; // reduce available memory
     }
     else {
@@ -367,7 +375,7 @@ Flag ManagementInitialization(void){
   return TRUE;
 }
 
-Memory FindBestFit(Memory size) {
+Memory FindBestFitIndex(Memory size) {
   Memory innerSize = size / PAGESIZE;
   Memory m;
   Memory tableSize = sizeof (Memory) * (AvailableMemory / PAGESIZE);
