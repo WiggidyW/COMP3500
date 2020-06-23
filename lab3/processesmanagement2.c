@@ -315,6 +315,8 @@ void BookKeeping(void){
 \***********************************************************************/
 void LongtermScheduler(void){
   ProcessControlBlock *currentProcess = DequeueProcess(JOBQUEUE);
+  EnqueueProcess(JOBQUEUE,currentProcess);
+  ProcessControlBlock *currentProcess = DequeueProcess(JOBQUEUE);
   ProcessControlBlock *lastProcess = Queues[JOBQUEUE].Head; // tracks the final process in the queue
   while (currentProcess) {
     if (currentProcess->MemoryRequested <= AvailableMemory) {
