@@ -90,7 +90,6 @@ int main (int argc, char **argv) {
 
 void ManageProcesses(void){
   ManagementInitialization();
-  BookKeeping();
   
   // allocate the memory table!
   Memory m;
@@ -101,6 +100,7 @@ void ManageProcesses(void){
     MemoryTable[m] = 0;
   }
   MemoryTable[*TableSize - 1] = 1; // assists our mapping
+  BookKeeping();
   
   while (1) {
     IO();
