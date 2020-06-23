@@ -20,7 +20,7 @@
 
 typedef enum {TAT,RT,CBT,THGT,WT,AWTJQ} Metric;
 
-typedef enum {T,F} Boolean;
+typedef enum {TRUE,FALSE} Boolean;
 
 /*****************************************************************************\
 *                             Global definitions                              *
@@ -48,7 +48,7 @@ typedef enum {T,F} Boolean;
 Quantity NumberofJobs[MAXMETRICS]; // Number of Jobs for which metric was collected
 Average  SumMetrics[MAXMETRICS]; // Sum for each Metrics
 
-Boolean  MemoryTable[AvailableMemory]; // Table of available memory holes
+// Boolean  MemoryTable[AvailableMemory]; // Table of available memory holes
 
 /*****************************************************************************\
 *                               Function prototypes                           *
