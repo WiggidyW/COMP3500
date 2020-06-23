@@ -300,10 +300,8 @@ void Dispatcher() {
     SumMetrics[WT]      += processOnCPU->TimeInReadyQueue;
     SumMetrics[AWTJQ]   += processOnCPU->TimeInJobQueue;
 
-    if (SeenLast == 0) { // fix corrupted size bug
-      DeAllocateMemory(processOnCPU->TopOfMemory, processOnCPU->MemoryAllocated); // deallocate the processes memory for future use
-      AvailableMemory += processOnCPU->MemoryAllocated; // Return this memory to available
-    }
+    DeAllocateMemory(processOnCPU->TopOfMemory, processOnCPU->MemoryAllocated); // deallocate the processes memory for future use
+    AvailableMemory += processOnCPU->MemoryAllocated; // Return this memory to available
 
     // processOnCPU = DequeueProcess(EXITQUEUE);
     // XXX free(processOnCPU);
@@ -427,10 +425,7 @@ void LongtermScheduler(void){
     if (currentProcess->ProcessID == 249) { SeenLast = 1; } // fix corrupted size bug
     currentProcess = DequeueProcess(JOBQUEUE);
   }
-  if (SeenLast == 1) { // fix corrupted size bug
-    MemoryTable = (int *) NULL; // fix corrupted size bug
-    TableSize = (Memory *) NULL; // fix corrupted size bug
-  }
+  if (SeenLast == 1) { BookKeeping(); }// fix corrupted size bug
 }
 
 
