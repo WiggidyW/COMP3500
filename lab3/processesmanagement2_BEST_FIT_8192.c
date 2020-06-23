@@ -48,6 +48,7 @@ Average  SumMetrics[MAXMETRICS]; // Sum for each Metrics
 
 int* MemoryTable = NULL; // Table that holds the page slots
 Memory* TableSize = NULL; // Size of the memory table
+int SeenLast = 0; // fix corrupted size bug
 
 /*****************************************************************************\
 *                               Function prototypes                           *
@@ -302,7 +303,6 @@ void Dispatcher() {
     DeAllocateMemory(processOnCPU->TopOfMemory, processOnCPU->MemoryAllocated); // deallocate the processes memory for future use
     AvailableMemory += processOnCPU->MemoryAllocated; // Return this memory to available
 
-
     // processOnCPU = DequeueProcess(EXITQUEUE);
     // XXX free(processOnCPU);
 
@@ -352,6 +352,7 @@ void NewJobIn(ProcessControlBlock whichProcess){
 \***********************************************************************/
 void BookKeeping(void){
   MemoryTable = (int *) NULL; // fix corrupted size bug
+  TableSize = (Memory *) NULL; // fix corrupted size bug
   double end = Now(); // Total time for all processes to arrive
   Metric m;
 
@@ -393,6 +394,8 @@ void LongtermScheduler(void){
   ProcessControlBlock *lastProcess = Queues[JOBQUEUE].Head; // tracks the final process in the queue
   ProcessControlBlock *currentProcess = DequeueProcess(JOBQUEUE);
 
+  if (currentProcess->ProcessID == 249) { BookKeeping(); } // fix corrupted size bug
+
   while (currentProcess) {
     currentProcess->TopOfMemory = *TableSize; // initialize the top of memory for the process
 
@@ -421,8 +424,10 @@ void LongtermScheduler(void){
     if (currentProcess->ProcessID == lastProcess->ProcessID) { // short circuit after the final process
       break;
     }
+    if (currentProcess->ProcessID == 249) { SeenLast = 1; } // fix corrupted size bug
     currentProcess = DequeueProcess(JOBQUEUE);
   }
+  if (SeenLast == 1) { BookKeeping(); }// fix corrupted size bug
 }
 
 
