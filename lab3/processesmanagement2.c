@@ -20,8 +20,6 @@
 
 typedef enum {TAT,RT,CBT,THGT,WT,AWTJQ} Metric;
 
-typedef enum {T,F} Boolean;
-
 /*****************************************************************************\
 *                             Global definitions                              *
 \*****************************************************************************/
@@ -48,7 +46,7 @@ typedef enum {T,F} Boolean;
 Quantity NumberofJobs[MAXMETRICS]; // Number of Jobs for which metric was collected
 Average  SumMetrics[MAXMETRICS]; // Sum for each Metrics
 
-Boolean* MemoryTable = NULL;
+int* MemoryTable = NULL; // Table that holds the page slots
 
 /*****************************************************************************\
 *                               Function prototypes                           *
@@ -91,7 +89,15 @@ int main (int argc, char **argv) {
 
 void ManageProcesses(void){
   ManagementInitialization();
-  MemoryTable = malloc(AvailableMemory / PAGESIZE); // allocates the table dynamically
+  
+  // allocate the memory table!
+  int size = sizeof (int) * (AvailableMemory / PAGESIZE);
+  int i;
+  MemoryTable = malloc(sizeof (int) * (AvailableMemory / PAGESIZE));
+  for (i = 0; i < size; i++) {
+    MemoryTable[i] = 0;
+  }
+  
   while (1) {
     IO();
     CPUScheduler(PolicyNumber);
@@ -321,6 +327,9 @@ void BookKeeping(void){
 void LongtermScheduler(void){
   ProcessControlBlock *lastProcess = Queues[JOBQUEUE].Head; // tracks the final process in the queue
   ProcessControlBlock *currentProcess = DequeueProcess(JOBQUEUE);
+  Memory slotsNeeded; // number of table slots the process needs
+  Memory bestFitIndex; // index of the table slot that is the best fit
+  Memory bestFitCount; // number of pages that slot can accomodate
 
   printf("%u", currentProcess->TopOfMemory);
 
@@ -333,6 +342,13 @@ void LongtermScheduler(void){
     }
 
     if (currentProcess->MemoryAllocated <= AvailableMemory) {
+
+      // slotsNeeded = currentProcess->MemoryAllocated / PAGESIZE;
+      // int i;
+      // for (i = 0; i < AvailableMemory / PAGESIZE; i++) {
+
+      // }
+
       currentProcess->TimeInJobQueue = Now() - currentProcess->JobArrivalTime; // Set TimeInJobQueue
       currentProcess->JobStartTime = Now(); // Set JobStartTime
       EnqueueProcess(READYQUEUE,currentProcess); // Place process in Ready Queue
