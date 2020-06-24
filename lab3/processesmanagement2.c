@@ -245,6 +245,44 @@ Memory FindBestFitIndex(Memory size) {
 }
 
 //
+// Finds the index of the worst fit, or table size if there is no fit
+//
+Memory FindWorstFitIndex(Memory size) {
+  Memory innerSize = size / PAGESIZE;
+  Memory m;
+  Memory worstFitIndex = *TableSize; // index of the table slot that is the worst fit
+  Memory currentIndex = *TableSize; // index of the current (first 0) table slot
+  Memory worstFitCount = 0;
+  Memory currentCount = 0;
+  for (m = 0; m < *TableSize; m++) {
+    if (MemoryTable[m] == 0) {
+      if (currentIndex == *TableSize) {
+        currentIndex = m;
+      }
+      currentCount++;
+    }
+    else {
+      // printf("current count - %u, current index - %u,\n", currentCount, currentIndex);
+      if (currentCount > innerSize) {
+        if (currentCount > worstFitCount || worstFitCount < innerSize) {
+          worstFitIndex = currentIndex;
+          worstFitCount = currentCount;
+        }
+      }
+      currentIndex = *TableSize;
+      currentCount = 0;
+    }
+  }
+  if (bestFitIndex != *TableSize) {
+    printf(
+      "WORST FIT ALLOCATION: page table size - %u, process page count - %u, index of allocated memory - %u,\n\n",
+      *TableSize, innerSize, bestFitIndex
+    );
+  }
+  return(bestFitIndex);
+}
+
+//
 // allocates memory at the given index
 //
 void AllocateMemory(Memory index, Memory size) {
@@ -407,7 +445,7 @@ void LongtermScheduler(void){
 
     // attempt to find a memory hole that will accomodate the process
     if (currentProcess->MemoryAllocated <= AvailableMemory) {
-      currentProcess->TopOfMemory = FindBestFitIndex(currentProcess->MemoryAllocated);
+      currentProcess->TopOfMemory = FindWorstFitIndex(currentProcess->MemoryAllocated);
     }
 
     if (currentProcess->TopOfMemory != *TableSize) {
