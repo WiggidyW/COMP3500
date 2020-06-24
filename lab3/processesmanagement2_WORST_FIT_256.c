@@ -30,7 +30,7 @@ typedef enum {TAT,RT,CBT,THGT,WT,AWTJQ} Metric;
 
 #define MAXMETRICS      6 
 
-#define PAGESIZE     8192
+#define PAGESIZE     256
 
 /*****************************************************************************\
 *                            Global data structures                           *
