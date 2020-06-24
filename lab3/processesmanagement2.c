@@ -273,13 +273,13 @@ Memory FindWorstFitIndex(Memory size) {
       currentCount = 0;
     }
   }
-  if (bestFitIndex != *TableSize) {
+  if (worstFitIndex != *TableSize) {
     printf(
       "WORST FIT ALLOCATION: page table size - %u, process page count - %u, index of allocated memory - %u,\n\n",
-      *TableSize, innerSize, bestFitIndex
+      *TableSize, innerSize, worstFitIndex
     );
   }
-  return(bestFitIndex);
+  return(worstFitIndex);
 }
 
 //
